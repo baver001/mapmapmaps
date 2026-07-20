@@ -1,0 +1,6 @@
+{
+  "vpsHost": "YOUR_SERVER_IP_OR_HOSTNAME",
+  "vpsUser": "YOUR_SSH_USER",
+  "vpsSshKeyPath": "C:\\Users\\YOU\\.ssh\\id_rsa",
+  "vpsPort": "22"
+}

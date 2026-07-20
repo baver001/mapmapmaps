@@ -11,9 +11,9 @@
 - UI v2: HUD (progress dots, round/score pills), compact dock, fullscreen map sheet, result card, toast
 - UI: `index.html`, `script.js`, `css/style.css` — Mapillary Viewer + text guess + optional MapLibre
 - Seeds: `data/seeds.json` (~1842 точек, только `is_pano` / spherical), билдер `npm run seeds`
-- API: `functions/api/mapillary.js` — `action=random|config|stats`
-- Текст guess: Nominatim (free); карта: MapLibre + OpenFreeMap (free)
-- Деплой: Cloudflare Pages (`npm run deploy`)
+- API: `functions/api/mapillary.js` (Wrangler) или `server/index.mjs` (VPS)
+- Текст guess: Nominatim; карта: MapLibre + OpenFreeMap
+- Деплой production: **VPS** — `DEPLOY_SIMPLE.md` (push → GitHub Secrets → auto)
 
 ```mermaid
 flowchart TD

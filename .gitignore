@@ -9,6 +9,9 @@ dist/
 build/
 .cache/
 
+# Local deploy config (copy from deploy.config.example.json)
+deploy.config.json
+
 # Environment variables / local secrets
 .env
 .env.local

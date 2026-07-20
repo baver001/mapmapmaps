@@ -1,0 +1,38 @@
+# Пример для nginx — mapmapmaps.com
+# Положите в /etc/nginx/sites-available/mapmapmaps и symlink в sites-enabled.
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name mapmapmaps.com www.mapmapmaps.com;
+
+    # ssl_certificate /etc/letsencrypt/live/mapmapmaps.com/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/mapmapmaps.com/privkey.pem;
+
+    client_max_body_size 1m;
+
+    location /api/mapillary {
+        proxy_pass http://127.0.0.1:8787;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8787;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name mapmapmaps.com www.mapmapmaps.com;
+    return 301 https://$host$request_uri;
+}

@@ -1,0 +1,19 @@
+[Unit]
+Description=MapMapMaps (static + Mapillary API)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/mapmapmaps
+EnvironmentFile=/var/www/mapmapmaps/.env.local
+ExecStart=/usr/bin/env node /var/www/mapmapmaps/server/index.mjs
+Restart=on-failure
+RestartSec=5
+
+# Hardening (adjust if your Node path differs)
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
