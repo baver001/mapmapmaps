@@ -1,0 +1,8 @@
+name = "mapmapmaps"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+
+# Secrets (not committed):
+#   Local:  .dev.vars  →  MAPILLARY_ACCESS_TOKEN=...
+#   Prod:   wrangler pages secret put MAPILLARY_ACCESS_TOKEN --project-name=mapmapmaps
+

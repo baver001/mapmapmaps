@@ -1,0 +1,25 @@
+{
+  "name": "mapmapmaps",
+  "version": "1.2.0",
+  "description": "Free GeoGuessr-style game on Mapillary 360° panoramas (no paid APIs)",
+  "scripts": {
+    "seeds": "node scripts/build-seeds.mjs",
+    "deploy": "wrangler pages deploy . --project-name=mapmapmaps --commit-dirty=true",
+    "deploy:preview": "wrangler pages deploy . --project-name=mapmapmaps --branch=preview --commit-dirty=true",
+    "dev": "wrangler pages dev . --compatibility-date=2024-01-01",
+    "preview": "npm run dev",
+    "verify": "node scripts/verify-local.mjs"
+  },
+  "keywords": [
+    "mapillary",
+    "panorama",
+    "game",
+    "geography"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
+

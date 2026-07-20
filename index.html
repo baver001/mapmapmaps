@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="description"
+      content="MapMapMaps — free GeoGuessr-style game on Mapillary 360° panoramas. No paid APIs."
+    />
+    <meta property="og:title" content="MapMapMaps" />
+    <meta
+      property="og:description"
+      content="Guess the place from a random Mapillary street panorama."
+    />
+    <meta property="og:url" content="https://mapmapmaps.com/" />
+    <link rel="canonical" href="https://mapmapmaps.com/" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#ff6b35" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>MapMapMaps — Guess the location</title>
+    <link rel="icon" href="/image/map_icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/mapillary-js@4.1.2/dist/mapillary.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/mapillary-js@4.1.2/dist/mapillary.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  </head>
+  <body>
+    <div id="panorama" aria-hidden="true"></div>
+
+    <video
+      class="preloader"
+      src="./image/loader.mp4"
+      loop
+      muted
+      autoplay
+      playsinline
+      preload="auto"
+      aria-label="Loading"
+    ></video>
+
+    <main class="app" id="app">
+      <header class="hud">
+        <img class="hud__logo" src="./image/title.svg" alt="MapMapMaps" />
+        <div class="hud__right">
+          <div class="hud__progress" id="progress" aria-label="Round progress">
+            <span class="hud__dot is-active"></span>
+            <span class="hud__dot"></span>
+            <span class="hud__dot"></span>
+            <span class="hud__dot"></span>
+            <span class="hud__dot"></span>
+          </div>
+          <div class="hud__stats">
+            <span class="hud__pill" id="round-pill">Round 1/5</span>
+            <span class="hud__pill hud__pill--score" id="score-pill">0 pts</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="dock" id="dock">
+        <form class="dock__row" id="guess-form" autocomplete="off">
+          <label class="dock__field">
+            <span class="dock__icon" aria-hidden="true">⌕</span>
+            <input
+              id="guess-input"
+              class="dock__input"
+              type="text"
+              placeholder="City or country…"
+              autocomplete="off"
+              enterkeyhint="search"
+            />
+            <ul id="autocomplete" class="dock__autocomplete" hidden></ul>
+          </label>
+          <button class="btn btn--primary" id="guess-btn" type="submit">Guess</button>
+        </form>
+        <div class="dock__links">
+          <button class="link-btn" id="replace-btn" type="button">Skip round</button>
+          <span class="dock__sep" aria-hidden="true">·</span>
+          <button class="link-btn" id="map-toggle" type="button" aria-expanded="false">
+            Open map
+          </button>
+        </div>
+      </section>
+
+      <section class="map-sheet" id="map-panel" hidden>
+        <header class="map-sheet__bar">
+          <button class="btn btn--soft" id="map-back" type="button">← Street view</button>
+          <p class="map-sheet__title">Drop a pin on the map</p>
+          <button class="btn btn--primary btn--sm" id="map-guess-btn" type="button" disabled>
+            Guess
+          </button>
+        </header>
+        <div id="guess-map" class="map-sheet__map" role="application" aria-label="Guess map"></div>
+        <footer class="map-sheet__foot">
+          <button class="link-btn link-btn--dark" id="clear-pin" type="button">Clear pin</button>
+        </footer>
+      </section>
+
+      <div class="result" id="result" hidden>
+        <div class="result__card">
+          <p class="result__round" id="result-round">Round 1</p>
+          <h2 class="result__score" id="result-score">0 pts</h2>
+          <p class="result__distance" id="result-distance">0 km away</p>
+          <div class="result__places">
+            <div class="result__place">
+              <span class="result__dot result__dot--guess"></span>
+              <div>
+                <span class="result__label">Your guess</span>
+                <strong id="result-guess-label">—</strong>
+              </div>
+            </div>
+            <div class="result__place">
+              <span class="result__dot result__dot--actual"></span>
+              <div>
+                <span class="result__label">Actual</span>
+                <strong id="result-actual-label">—</strong>
+              </div>
+            </div>
+          </div>
+          <div id="result-map" class="result__map"></div>
+          <button class="btn btn--primary result__next" id="next-btn" type="button">
+            Next round
+          </button>
+        </div>
+      </div>
+
+      <p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+    </main>
+
+    <script src="/script.js"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js").catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>
