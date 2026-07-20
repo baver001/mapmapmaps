@@ -4,7 +4,7 @@
  */
 
 import { createServer } from "node:http";
-import { createReadStream, existsSync, readFileSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { join, extname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -108,7 +108,7 @@ async function serveStatic(req, res, url) {
     return;
   }
 
-  if (!existsSync(filePath)) {
+  if (!existsSync(filePath) || !statSync(filePath).isFile()) {
     res.writeHead(404);
     res.end("Not found");
     return;
