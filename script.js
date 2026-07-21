@@ -51,6 +51,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const gameCompleteSub = document.querySelector("#game-complete-sub");
   const gameCompletePlay = document.querySelector("#game-complete-play");
 
+  const requiredElements = {
+    app: appEl,
+    roundPill,
+    scorePill,
+    progress: progressEl,
+    runTrackFill,
+    runPct: runPctEl,
+    mapPanel,
+    mapToggle,
+    mapBack: mapBackBtn,
+    mapGuess: mapGuessBtn,
+    guessForm,
+    guessInput,
+    replace: replaceBtn,
+    next: nextBtn,
+    result: resultEl,
+    gameComplete: gameCompleteEl,
+    gameCompletePlay,
+  };
+  const missingElements = Object.entries(requiredElements)
+    .filter(([, element]) => !element)
+    .map(([name]) => name);
+  if (missingElements.length) {
+    console.error(`MapMapMaps: missing required elements: ${missingElements.join(", ")}`);
+    if (preloader) preloader.classList.add("hide");
+    return;
+  }
+
   const ROUNDS_PER_GAME = 5;
   const BEST_KEY = "mapmapmaps_personal_best_v1";
   const GAMES_KEY = "mapmapmaps_games_completed_v1";
