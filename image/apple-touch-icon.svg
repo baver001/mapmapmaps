@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none">
   <rect width="180" height="180" rx="40" fill="#141210"/>
-  <g transform="translate(31 18) scale(2.95)">
+  <g transform="translate(28 16) scale(3.1)">
     <path
-      d="M20 2.5C10.2 2.5 3 10.8 3 18.8C3 27.8 20 46.5 20 46.5C20 46.5 37 27.8 37 18.8C37 10.8 29.8 2.5 20 2.5Z"
+      d="M20 2C9.5 2 2.5 10 2.5 18.5C2.5 27.5 17 45.5 20 46.5C23 45.5 37.5 27.5 37.5 18.5C37.5 10 30.5 2 20 2Z"
       fill="#8B5CF6"
     />
-    <rect x="11" y="15.5" width="5.5" height="5.5" rx="1.5" fill="#F8FAFC"/>
-    <rect x="23.5" y="15.5" width="5.5" height="5.5" rx="1.5" fill="#F8FAFC"/>
+    <rect x="13" y="18.5" width="6" height="6" rx="1.75" fill="#F8FAFC"/>
+    <rect x="21" y="18.5" width="6" height="6" rx="1.75" fill="#F8FAFC"/>
   </g>
 </svg>
