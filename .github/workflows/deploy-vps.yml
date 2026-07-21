@@ -8,6 +8,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Skip until VPS_* secrets are set (see DEPLOY_SIMPLE.md — or use server autopull)
+    if: ${{ secrets.VPS_HOST != '' && secrets.VPS_USER != '' && secrets.VPS_SSH_KEY != '' }}
     steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.2.0
@@ -28,3 +30,12 @@ jobs:
               sudo chown -R "$USER:$USER" "$APP_DIR"
             fi
             bash "$APP_DIR/deploy/vps/remote-deploy.sh"
+
+  deploy-skipped:
+    runs-on: ubuntu-latest
+    if: ${{ secrets.VPS_HOST == '' || secrets.VPS_USER == '' || secrets.VPS_SSH_KEY == '' }}
+    steps:
+      - name: Note
+        run: |
+          echo "GitHub→VPS SSH deploy skipped (VPS_HOST / VPS_USER / VPS_SSH_KEY not set)."
+          echo "Use server autopull: deploy/vps/install-autopull.sh — see DEPLOY_SIMPLE.md"

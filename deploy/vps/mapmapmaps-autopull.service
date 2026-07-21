@@ -1,0 +1,8 @@
+[Unit]
+Description=MapMapMaps git autopull check
+
+[Service]
+Type=oneshot
+WorkingDirectory=/var/www/mapmapmaps
+ExecStart=/var/www/mapmapmaps/deploy/vps/autopull.sh
+User=root

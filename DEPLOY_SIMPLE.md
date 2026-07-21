@@ -1,65 +1,73 @@
-# Простой деплой на VPS
+# Деплой MapMapMaps
 
-**Идея:** один раз настроить GitHub Secrets → дальше только `git push` в `main`.  
-Токен Mapillary кладётся в Secrets (client token, не payment) — на сервер он попадает автоматически.
+Два способа. **Проще без GitHub Secrets — autopull на VPS** (рекомендуем, если сайт уже на сервере).
 
-## Один раз (≈5 минут)
+---
 
-### 1. VPS
+## A. Autopull на VPS (рекомендуется)
 
-- Ubuntu/Debian с **Node 20+** (`node -v`)
-- SSH-пользователь с **sudo** (для systemd)
-- **nginx** уже смотрит на сайт — оставь прокси на `127.0.0.1:8787` (пример: `deploy/vps/nginx-mapmapmaps.conf.example`)
+Сервер каждые **2 минуты** смотрит `main` на GitHub; при новом коммите — `git pull` + restart.  
+**GitHub Actions и SSH-ключи не нужны.** Репозиторий публичный — для `git fetch` токен не требуется.
 
-### 2. Секреты в GitHub
-
-Репозиторий → **Settings → Secrets and variables → Actions → New repository secret**
-
-| Secret | Значение |
-|--------|----------|
-| `MAPILLARY_ACCESS_TOKEN` | `MLY\|…\|…` из Mapillary |
-| `VPS_HOST` | IP или домен сервера |
-| `VPS_USER` | SSH user |
-| `VPS_SSH_KEY` | приватный ключ (полное содержимое `id_rsa`) |
-
-Опционально: `VPS_PORT` (если не 22).
-
-**Автозаливка из `.dev.vars` (локально):**
+### Один раз на VPS (под root или через sudo)
 
 ```bash
+cd /var/www/mapmapmaps 2>/dev/null || true
+# если репо ещё нет — скрипт сам клонирует
+
+export MAPILLARY_ACCESS_TOKEN='MLY|YOUR_CLIENT|YOUR_TOKEN'
+sudo -E bash -c "$(curl -fsSL https://raw.githubusercontent.com/baver001/mapmapmaps/main/deploy/vps/install-autopull.sh)"
+```
+
+Или если репо уже есть локально:
+
+```bash
+export MAPILLARY_ACCESS_TOKEN='MLY|…'
+sudo -E bash deploy/vps/install-autopull.sh
+```
+
+Проверка:
+
+```bash
+systemctl status mapmapmaps mapmapmaps-autopull.timer
+curl -s http://127.0.0.1:8787/api/mapillary?action=stats
+```
+
+Дальше: **`git push origin main`** → через ≤2 мин на сайте новая версия.
+
+Файлы: `deploy/vps/autopull.sh`, `mapmapmaps-autopull.timer`, `install-autopull.sh`.
+
+---
+
+## B. GitHub Actions → SSH (опционально)
+
+Мгновенный деплой на push, но нужны secrets:
+
+| Secret | |
+|--------|--|
+| `VPS_HOST` | IP/хост |
+| `VPS_USER` | SSH user |
+| `VPS_SSH_KEY` | приватный ключ |
+| `MAPILLARY_ACCESS_TOKEN` | Mapillary |
+
+Локально:
+
+```bash
+cp deploy.config.example.json deploy.config.json
 npm run setup:github-secrets
 ```
 
-Нужны: файл `.dev.vars` с токеном и `deploy.config.json` (скопируй из `deploy.config.example.json`).
+Workflow **Deploy VPS** сработает только когда заданы все три `VPS_*` secrets.  
+Иначе job `deploy-skipped` — без красного «failure».
 
-### 3. Push
+---
 
-```bash
-git push origin main
-```
-
-Workflow **Deploy VPS** сам:
-
-- клонирует `/var/www/mapmapmaps` (если пусто);
-- `git pull`;
-- пишет `/var/www/mapmapmaps/.env.local` с токеном;
-- перезапускает `mapmapmaps` (systemd).
-
-Проверка на сервере:  
-`curl -s http://127.0.0.1:8787/api/mapillary?action=stats`
-
-## Локально
+## Локальная разработка
 
 ```bash
-cp .dev.vars.example .dev.vars   # токен
-npm start                        # http://127.0.0.1:8787
+cp .dev.vars.example .dev.vars
+npm start    # :8787
+npm run dev  # Wrangler (опционально)
 ```
 
-## Смена токена
-
-Обнови secret `MAPILLARY_ACCESS_TOKEN` в GitHub → **Run workflow** «Deploy VPS» или любой push в `main`.
-
-## Подробности
-
-- nginx / TLS: `deploy/vps/nginx-mapmapmaps.conf.example`
-- старый ручной вариант: `deploy/vps/setup-secret.sh` (не нужен при CI)
+nginx example: `deploy/vps/nginx-mapmapmaps.conf.example`
