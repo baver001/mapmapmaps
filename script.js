@@ -22,9 +22,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultGuessLabel = document.querySelector("#result-guess-label");
   const resultActualLabel = document.querySelector("#result-actual-label");
   const toastEl = document.querySelector("#toast");
+  const gameCompleteEl = document.querySelector("#game-complete");
+  const confettiCanvas = document.querySelector("#confetti-canvas");
+  const gameCompleteBadge = document.querySelector("#game-complete-badge");
+  const gameCompleteTotal = document.querySelector("#game-complete-total");
+  const gameCompleteBest = document.querySelector("#game-complete-best");
+  const gameCompleteSub = document.querySelector("#game-complete-sub");
+  const gameCompletePlay = document.querySelector("#game-complete-play");
 
   const ROUNDS_PER_GAME = 5;
-  const SCORE_KEY = "mapmapmaps_total_v4";
+  const BEST_KEY = "mapmapmaps_personal_best_v1";
+  const GAMES_KEY = "mapmapmaps_games_completed_v1";
   const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
 
   let viewer = null;
@@ -43,6 +51,131 @@ document.addEventListener("DOMContentLoaded", () => {
   let autocompleteTimer = null;
   let pickingAutocomplete = false;
   let toastTimer = null;
+  let confettiRaf = null;
+
+  function getPersonalBest() {
+    return Number(localStorage.getItem(BEST_KEY) || 0);
+  }
+
+  function formatPts(n) {
+    return `${n.toLocaleString("en-US")} pts`;
+  }
+
+  function launchConfetti(durationMs = 4200) {
+    if (!confettiCanvas) return;
+    const ctx = confettiCanvas.getContext("2d");
+    if (!ctx) return;
+
+    if (confettiRaf) cancelAnimationFrame(confettiRaf);
+
+    const resize = () => {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const colors = ["#ff6b35", "#ffd166", "#06d6a0", "#118ab2", "#ef476f", "#ffffff", "#8338ec"];
+    const w = () => confettiCanvas.width;
+    const h = () => confettiCanvas.height;
+    const particles = Array.from({ length: 140 }, () => ({
+      x: Math.random() * w(),
+      y: -20 - Math.random() * h() * 0.6,
+      vx: (Math.random() - 0.5) * 9,
+      vy: Math.random() * 4 + 3,
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 0.25,
+      pw: 5 + Math.random() * 7,
+      ph: 4 + Math.random() * 5,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
+
+    const start = performance.now();
+
+    const frame = (now) => {
+      const elapsed = now - start;
+      ctx.clearRect(0, 0, w(), h());
+
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.06;
+        p.vx *= 0.995;
+        p.rot += p.vr;
+
+        if (p.y > h() + 20) {
+          p.y = -16;
+          p.x = Math.random() * w();
+          p.vy = Math.random() * 3 + 2;
+        }
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.pw / 2, -p.ph / 2, p.pw, p.ph);
+        ctx.restore();
+      }
+
+      if (elapsed < durationMs) {
+        confettiRaf = requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, w(), h());
+        window.removeEventListener("resize", resize);
+        confettiRaf = null;
+      }
+    };
+
+    confettiRaf = requestAnimationFrame(frame);
+  }
+
+  function showGameComplete(totalScore) {
+    const prevBest = getPersonalBest();
+    const gamesBefore = Number(localStorage.getItem(GAMES_KEY) || 0);
+    const isFirstFinish = gamesBefore === 0;
+    const isNewRecord = totalScore > prevBest;
+
+    if (isNewRecord) {
+      localStorage.setItem(BEST_KEY, String(totalScore));
+    }
+    localStorage.setItem(GAMES_KEY, String(gamesBefore + 1));
+
+    const bestNow = isNewRecord ? totalScore : prevBest;
+
+    resultEl.hidden = true;
+    gameCompleteEl.hidden = false;
+    appEl.classList.add("is-result-open");
+
+    gameCompleteTotal.textContent = formatPts(totalScore);
+    gameCompleteBest.textContent = formatPts(bestNow);
+
+    if (isFirstFinish) {
+      gameCompleteBadge.hidden = false;
+      gameCompleteBadge.textContent = "First game complete!";
+      gameCompleteSub.textContent = "Your score is saved on this device. Beat it next time!";
+      launchConfetti();
+    } else if (isNewRecord) {
+      gameCompleteBadge.hidden = false;
+      gameCompleteBadge.textContent = "New personal best!";
+      gameCompleteSub.textContent = `You beat your previous record of ${formatPts(prevBest)}.`;
+      launchConfetti();
+    } else {
+      gameCompleteBadge.hidden = true;
+      const diff = bestNow - totalScore;
+      gameCompleteSub.textContent =
+        diff > 0
+          ? `${formatPts(diff)} away from your record — try again!`
+          : "Great run! See if you can go even higher.";
+    }
+  }
+
+  function closeGameCompleteAndRestart() {
+    gameCompleteEl.hidden = true;
+    appEl.classList.remove("is-result-open");
+    roundIndex = 1;
+    gameScore = 0;
+    loadRound().catch(() => {});
+  }
 
   function showToast(text, ms = 3200) {
     if (!text) {
@@ -341,6 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loading = true;
     roundLocked = false;
     resultEl.hidden = true;
+    gameCompleteEl.hidden = true;
     resetRoundUi();
     showPreloader(true);
     renderHud();
@@ -390,8 +524,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resultGuessLabel.textContent = guessLabel;
     resultActualLabel.textContent = actualLabel;
 
-    nextBtn.textContent =
-      roundIndex >= ROUNDS_PER_GAME ? "New game" : "Next round";
+    nextBtn.textContent = roundIndex >= ROUNDS_PER_GAME ? "Finish game" : "Next round";
 
     if (resultMap) {
       resultMap.remove();
@@ -486,10 +619,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const actualLabel = await reverseLabel(actual.lat, actual.lng);
 
       gameScore += points;
-      localStorage.setItem(
-        SCORE_KEY,
-        String(Number(localStorage.getItem(SCORE_KEY) || 0) + points)
-      );
       renderHud();
       openMapPanel(false);
       showToast("");
@@ -504,11 +633,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function advanceRound() {
     if (roundIndex >= ROUNDS_PER_GAME) {
-      roundIndex = 1;
-      gameScore = 0;
-    } else {
-      roundIndex += 1;
+      showGameComplete(gameScore);
+      return;
     }
+    roundIndex += 1;
     loadRound().catch(() => {});
   }
 
@@ -575,6 +703,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   nextBtn.addEventListener("click", advanceRound);
+  gameCompletePlay.addEventListener("click", closeGameCompleteAndRestart);
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !resultEl.hidden) {

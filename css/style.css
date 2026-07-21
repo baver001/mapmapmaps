@@ -5,6 +5,9 @@
   --accent-dark: #e55420;
   --accent-soft: rgba(255, 107, 53, 0.22);
   --accent-glow: rgba(255, 107, 53, 0.4);
+  --accent-3d: #c94415;
+  --input-3d: #b8c4d4;
+  --dock-lift: 25vh;
   --ink: #0f172a;
   --muted: #64748b;
   --surface: rgba(15, 23, 42, 0.78);
@@ -70,6 +73,9 @@ body {
   visibility: hidden;
   pointer-events: none;
 }
+.app.is-result-open .game-complete {
+  pointer-events: all;
+}
 
 /* ── HUD ── */
 .hud {
@@ -134,7 +140,7 @@ body {
   pointer-events: all;
   position: absolute;
   left: 50%;
-  bottom: calc(12px + var(--safe-bottom));
+  bottom: calc(var(--dock-lift) + var(--safe-bottom));
   transform: translateX(-50%);
   width: min(480px, calc(100vw - 20px));
   transition: opacity 0.25s ease, visibility 0.25s ease;
@@ -166,20 +172,28 @@ body {
 .dock__input {
   width: 100%;
   height: 50px;
-  border: 1px solid rgba(255, 255, 255, 0.9);
+  border: 2px solid #e2e8f0;
   border-radius: var(--radius-pill);
   padding: 0 18px 0 42px;
   font: inherit;
   font-size: 15px;
+  font-weight: 600;
   color: var(--ink);
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: var(--shadow-dock);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 4px 0 var(--input-3d);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.12s ease;
 }
 .dock__input:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: var(--shadow-dock), 0 0 0 3px var(--accent-soft);
+  border-color: #dbeafe;
+  box-shadow: 0 4px 0 var(--input-3d);
+}
+.dock__input:focus-visible {
+  border-color: #cbd5e1;
+}
+.dock__input:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--input-3d);
 }
 .dock__input::placeholder {
   color: #94a3b8;
@@ -215,12 +229,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-.dock__sep {
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 12px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 /* ── Buttons ── */
@@ -236,7 +246,7 @@ body {
   white-space: nowrap;
   transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
 }
-.btn:active:not(:disabled) {
+.btn:active:not(:disabled):not(.btn--primary):not(.btn--3d-outline) {
   transform: scale(0.98);
 }
 .btn:disabled {
@@ -244,12 +254,20 @@ body {
   cursor: not-allowed;
 }
 .btn--primary {
-  background: var(--accent);
+  background: linear-gradient(180deg, #ff8555 0%, #ff6b35 52%, #f5622e 100%);
   color: #fff;
-  box-shadow: 0 8px 22px var(--accent-glow);
+  border: 2px solid #ff9a6e;
+  border-bottom: 2px solid #ff6b35;
+  box-shadow: 0 4px 0 var(--accent-3d);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.12s ease;
 }
 .btn--primary:hover:not(:disabled) {
-  background: var(--accent-dark);
+  filter: brightness(1.04);
+}
+.btn--primary:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 var(--accent-3d);
 }
 .btn--soft {
   background: rgba(255, 255, 255, 0.14);
@@ -281,19 +299,24 @@ body {
   animation: spin 0.7s linear infinite;
 }
 .link-btn {
-  border: none;
-  background: none;
-  color: rgba(255, 255, 255, 0.92);
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: rgba(15, 23, 42, 0.35);
+  color: #fff;
   font: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-  padding: 4px 2px;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
 }
 .link-btn:hover {
-  color: #fff;
-  text-decoration: underline;
+  background: rgba(15, 23, 42, 0.48);
+}
+.link-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0.35);
 }
 .link-btn--dark {
   color: var(--muted);
@@ -458,12 +481,102 @@ body {
   margin-top: 16px;
 }
 
+/* ── Game complete ── */
+.game-complete {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(8px);
+}
+.game-complete[hidden] {
+  display: none !important;
+}
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9;
+}
+.game-complete__card {
+  position: relative;
+  z-index: 10;
+  width: min(440px, 100%);
+  text-align: center;
+  background: linear-gradient(180deg, #ffffff 0%, #fff8f4 100%);
+  border-radius: 24px;
+  padding: 28px 22px 22px;
+  border: 3px solid #ffe0d0;
+  box-shadow: 0 8px 0 #e8c4b0, 0 24px 48px rgba(0, 0, 0, 0.28);
+  animation: result-in 0.35s ease;
+}
+.game-complete__badge {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, #ffd166 0%, #ffb703 100%);
+  color: #7c4a00;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  box-shadow: 0 3px 0 #c98500;
+}
+.game-complete__badge[hidden] {
+  display: none !important;
+}
+.game-complete__title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.15;
+}
+.game-complete__label {
+  margin-top: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.game-complete__total {
+  margin-top: 4px;
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+}
+.game-complete__best {
+  margin-top: 4px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.game-complete__sub {
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.game-complete__play {
+  width: 100%;
+  margin-top: 20px;
+}
+
 /* ── Toast ── */
 .toast {
   pointer-events: none;
   position: absolute;
   left: 50%;
-  bottom: calc(96px + var(--safe-bottom));
+  bottom: calc(var(--dock-lift) + 118px + var(--safe-bottom));
   transform: translateX(-50%);
   max-width: min(90vw, 360px);
   padding: 10px 14px;
@@ -490,7 +603,7 @@ body {
   }
   .dock {
     width: calc(100vw - 16px);
-    bottom: calc(8px + var(--safe-bottom));
+    bottom: calc(max(22vh, 72px) + var(--safe-bottom));
   }
   .dock__row .btn--primary {
     padding: 0 14px;
@@ -503,11 +616,4 @@ body {
 
 .mapillary-attribution {
   pointer-events: all !important;
-}
-
-/* Keep Mapillary controls clear of our dock */
-@media (min-width: 641px) {
-  .dock {
-    margin-bottom: 4px;
-  }
 }

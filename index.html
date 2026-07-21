@@ -81,7 +81,6 @@
         </form>
         <div class="dock__links">
           <button class="link-btn" id="replace-btn" type="button">Skip round</button>
-          <span class="dock__sep" aria-hidden="true">·</span>
           <button class="link-btn" id="map-toggle" type="button" aria-expanded="false">
             Open map
           </button>
@@ -101,6 +100,22 @@
           <button class="link-btn link-btn--dark" id="clear-pin" type="button">Clear pin</button>
         </footer>
       </section>
+
+      <div class="game-complete" id="game-complete" hidden>
+        <canvas class="confetti-canvas" id="confetti-canvas" aria-hidden="true"></canvas>
+        <div class="game-complete__card" role="dialog" aria-labelledby="game-complete-title">
+          <p class="game-complete__badge" id="game-complete-badge" hidden>New record!</p>
+          <h2 class="game-complete__title" id="game-complete-title">Game complete!</h2>
+          <p class="game-complete__label">This game</p>
+          <p class="game-complete__total" id="game-complete-total">0 pts</p>
+          <p class="game-complete__label">Personal best</p>
+          <p class="game-complete__best" id="game-complete-best">0 pts</p>
+          <p class="game-complete__sub" id="game-complete-sub"></p>
+          <button class="btn btn--primary game-complete__play" id="game-complete-play" type="button">
+            Play again
+          </button>
+        </div>
+      </div>
 
       <div class="result" id="result" hidden>
         <div class="result__card">
