@@ -234,8 +234,10 @@
         });
 
         window.addEventListener("load", () => {
+          const skip = (worker) => worker?.postMessage("skipWaiting");
           navigator.serviceWorker
-            .register(`/sw.js?v=8aa29f7"skipWaiting");
+            .register(`/sw.js?v=${encodeURIComponent(git)}`)
+            .then((reg) => {
               if (reg.waiting) skip(reg.waiting);
               reg.addEventListener("updatefound", () => {
                 const installing = reg.installing;
