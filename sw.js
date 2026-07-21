@@ -1,5 +1,5 @@
 /* Cache app shell only. Mapillary/OSM always from network. */
-const CACHE = "mapmapmaps-shell-v6";
+const CACHE = "mapmapmaps-shell-v7";
 const SHELL = [
   "/",
   "/index.html",
@@ -41,9 +41,12 @@ self.addEventListener("fetch", (event) => {
     caches.match(request).then((cached) => {
       const network = fetch(request)
         .then((response) => {
-          if (response.ok && url.origin === self.location.origin) {
+          if (response.status === 200 && url.origin === self.location.origin) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(request, copy));
+            caches
+              .open(CACHE)
+              .then((cache) => cache.put(request, copy))
+              .catch(() => {});
           }
           return response;
         })
