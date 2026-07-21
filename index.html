@@ -15,13 +15,13 @@
     <meta property="og:url" content="https://mapmapmaps.com/" />
     <link rel="canonical" href="https://mapmapmaps.com/" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="mapmapmaps-build" content="1.2.0+c6bc962+ui5" />
+    <meta name="mapmapmaps-build" content="1.2.0+680ace0+ui5" />
     <meta name="theme-color" content="#8b5cf6" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>MapMapMaps — Guess the location</title>
     <link rel="icon" href="/image/mascot-pin.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/css/style.css?v=c6bc962" />
+    <link rel="stylesheet" href="/css/style.css?v=680ace0" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/mapillary-js@4.1.2/dist/mapillary.min.css"
@@ -214,11 +214,11 @@
       </button>
     </main>
 
-    <script src="/js/version.js?v=c6bc962"></script>
-    <script src="/js/build-diagnostics.js?v=c6bc962"></script>
+    <script src="/js/version.js?v=680ace0"></script>
+    <script src="/js/build-diagnostics.js?v=680ace0"></script>
     <script src="/js/i18n.js"></script>
     <script src="/js/sfx.js"></script>
-    <script src="/script.js?v=c6bc962"></script>
+    <script src="/script.js?v=680ace0"></script>
     <script>
       (function () {
         if (!("serviceWorker" in navigator)) return;
@@ -234,7 +234,7 @@
         window.addEventListener("load", () => {
           const skip = (worker) => worker?.postMessage("skipWaiting");
           navigator.serviceWorker
-            .register(`/sw.js?v=c6bc962"updatefound", () => {
+            .register(`/sw.js?v=680ace0"updatefound", () => {
                 const installing = reg.installing;
                 installing?.addEventListener("statechange", () => {
                   if (installing.state === "installed" && navigator.serviceWorker.controller) {
