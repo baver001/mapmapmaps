@@ -1,5 +1,5 @@
 /* Cache app shell only. Mapillary/OSM always from network. */
-const CACHE = "mapmapmaps-shell-v9";
+const CACHE = "mapmapmaps-shell-v10";
 const SHELL = [
   "/",
   "/index.html",
@@ -14,6 +14,18 @@ const SHELL = [
   "/data/seeds.json",
   "/image/mascot-pin.svg",
 ];
+
+const NETWORK_FIRST = new Set([
+  "/",
+  "/index.html",
+  "/version.json",
+  "/script.js",
+  "/js/version.js",
+  "/js/build-diagnostics.js",
+  "/js/i18n.js",
+  "/js/sfx.js",
+  "/css/style.css",
+]);
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -34,6 +46,13 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+function cachePut(request, response) {
+  if (response.ok && response.status === 200) {
+    const copy = response.clone();
+    caches.open(CACHE).then((cache) => cache.put(request, copy)).catch(() => {});
+  }
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
@@ -44,17 +63,23 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  if (NETWORK_FIRST.has(url.pathname)) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          cachePut(request, response);
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
       const network = fetch(request)
         .then((response) => {
-          if (response.status === 200 && url.origin === self.location.origin) {
-            const copy = response.clone();
-            caches
-              .open(CACHE)
-              .then((cache) => cache.put(request, copy))
-              .catch(() => {});
-          }
+          cachePut(request, response);
           return response;
         })
         .catch(() => cached);

@@ -11,6 +11,23 @@
     return `v${app} · ${git} · ui${ui}`;
   }
 
+  function isStale(client, server) {
+    if (!client || !server) return false;
+    if (client.git && server.git && client.git !== server.git) return true;
+    if (client.ui != null && server.ui != null && client.ui !== server.ui) return true;
+    return false;
+  }
+
+  function maybeReloadForDeploy(server) {
+    if (!server?.git) return false;
+    const key = `mapmapmaps-reload-${server.git}`;
+    if (sessionStorage.getItem(key)) return false;
+    sessionStorage.setItem(key, "1");
+    console.info("MapMapMaps: new deploy detected, reloading…", server.git);
+    global.location.reload();
+    return true;
+  }
+
   function logBuildDiagnostics() {
     const client = clientBuild();
     const label = client
@@ -19,7 +36,7 @@
 
     console.info(
       `%cMapMapMaps build%c ${label}`,
-      "font-weight:700;color:#58cc02",
+      "font-weight:700;color:#8b5cf6",
       "font-weight:600;color:inherit"
     );
 
@@ -37,19 +54,14 @@
           return { client, server: null };
         }
 
-        if (client?.git && server.git && client.git !== server.git) {
+        if (isStale(client, server)) {
           console.warn("MapMapMaps STALE CLIENT CACHE", {
-            clientGit: client.git,
+            clientGit: client?.git,
             serverGit: server.git,
-            clientShell: client.shell,
-            serverShell: server.shell,
-          });
-        }
-        if (client?.ui != null && server.ui != null && client.ui !== server.ui) {
-          console.warn("MapMapMaps UI generation mismatch", {
-            clientUi: client.ui,
+            clientUi: client?.ui,
             serverUi: server.ui,
           });
+          maybeReloadForDeploy(server);
         }
         return { client, server };
       })
@@ -63,26 +75,30 @@
     if (!button) return () => {};
     button.hidden = false;
 
+    let lastPair = { client: clientBuild(), server: null };
+
     const refresh = (client, server) => {
-      const stale =
-        (client?.git && server?.git && client.git !== server.git) ||
-        (client?.ui != null && server?.ui != null && client.ui !== server.ui);
-      button.classList.toggle("is-stale", Boolean(stale));
+      lastPair = { client, server };
+      const stale = isStale(client, server);
+      button.classList.toggle("is-stale", stale);
       button.textContent = formatBadge(client, server);
       const title = [
         client ? `Client: ${client.app} ${client.git} (${client.shell})` : "Client: unknown",
         server ? `Server: ${server.app} ${server.git} (${server.shell})` : "Server: unknown",
-        stale ? "— cache/deploy mismatch, hard refresh" : "",
+        stale ? "— click to reload and pick up new deploy" : "Click to copy build info",
       ]
         .filter(Boolean)
         .join("\n");
       button.title = title;
     };
 
-    const client = clientBuild();
-    refresh(client, null);
+    refresh(lastPair.client, null);
 
     button.addEventListener("click", () => {
+      if (isStale(lastPair.client, lastPair.server)) {
+        global.location.reload();
+        return;
+      }
       const text = button.title || button.textContent;
       navigator.clipboard?.writeText(text).catch(() => {});
     });

@@ -1,12 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap");
 
 :root {
-  --accent: #58cc02;
-  --accent-dark: #46a302;
-  --accent-soft: rgba(88, 204, 2, 0.32);
-  --accent-glow: rgba(137, 226, 25, 0.55);
-  --accent-3d: #3a8800;
-  --accent-light: #89e219;
+  --accent: #8b5cf6;
+  --accent-dark: #7c3aed;
+  --accent-soft: rgba(139, 92, 246, 0.34);
+  --accent-glow: rgba(167, 139, 250, 0.55);
+  --accent-3d: #6d28d9;
+  --accent-light: #a78bfa;
+  --accent-bevel: 4px;
   --input-3d: #b8c4d4;
   --dock-lift: 25vh;
   --ink: #0f172a;
@@ -23,7 +24,7 @@
   --logo-size-min: 118px;
   --logo-size-max: 200px;
   --logo-center-clearance: 100px;
-  --guess-blue: #2563eb;
+  --guess-blue: #8b5cf6;
   --actual-green: #059669;
 }
 
@@ -90,23 +91,23 @@ body {
   grid-template-rows: auto auto;
   align-items: start;
   gap: 6px 10px;
-  padding: max(10px, env(safe-area-inset-top)) 12px 0;
+  padding: max(12px, env(safe-area-inset-top)) 12px 0;
+  overflow: visible;
 }
 .hud__mascot {
   grid-column: 1;
   grid-row: 1;
   pointer-events: none;
+  padding-top: 3px;
+  overflow: visible;
+  align-self: start;
 }
 .hud__mascot-svg {
   display: block;
   width: clamp(30px, 8vw, 36px);
   height: auto;
-}
-.hud__mascot-svg path {
-  stroke: #fff;
-  stroke-width: 2.2;
-  stroke-linejoin: round;
-  paint-order: stroke fill;
+  overflow: visible;
+  filter: drop-shadow(0 var(--accent-bevel) 0 var(--accent-3d));
 }
 .hud__score-chip {
   grid-column: 3;
@@ -142,7 +143,7 @@ body {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(220, 255, 200, 0.95);
+  color: rgba(233, 213, 255, 0.95);
 }
 .hud__score-value {
   display: block;
@@ -241,7 +242,7 @@ body {
   height: 100%;
   width: 0%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #46a302 0%, var(--accent) 50%, var(--accent-light) 100%);
+  background: var(--accent);
   box-shadow: none;
   transition: width 0.65s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
@@ -276,7 +277,7 @@ body {
 }
 .run-step.is-current {
   border-color: #fff;
-  background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
+  background: var(--accent);
   transform: scale(1.08);
   animation: run-pulse 1.6s ease-in-out infinite;
 }
@@ -442,20 +443,20 @@ body {
   cursor: not-allowed;
 }
 .btn--primary {
-  background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 48%, var(--accent-dark) 100%);
+  background: var(--accent);
   color: #fff;
-  border: 2px solid #7edb2a;
-  border-bottom: 2px solid var(--accent-dark);
-  box-shadow: 0 4px 0 var(--accent-3d);
-  text-shadow: 0 1px 2px rgba(0, 40, 30, 0.45);
-  transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.12s ease;
+  border: 2px solid var(--accent-light);
+  border-bottom: var(--accent-bevel) solid var(--accent-3d);
+  box-shadow: none;
+  text-shadow: none;
+  transition: transform 0.08s ease, border-bottom-width 0.08s ease, filter 0.12s ease;
 }
 .btn--primary:hover:not(:disabled) {
-  filter: brightness(1.04);
+  filter: brightness(1.05);
 }
 .btn--primary:active:not(:disabled) {
-  transform: translateY(4px);
-  box-shadow: 0 0 0 var(--accent-3d);
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 .btn--soft {
   background: rgba(255, 255, 255, 0.14);
@@ -837,8 +838,8 @@ body {
   background: linear-gradient(180deg, #ffffff 0%, #fff8f4 100%);
   border-radius: 24px;
   padding: 28px 22px 22px;
-  border: 3px solid #7edb2a;
-  box-shadow: 0 8px 0 var(--accent-light), 0 24px 48px rgba(0, 0, 0, 0.28);
+  border: 3px solid var(--accent-light);
+  box-shadow: 0 8px 0 var(--accent-soft), 0 24px 48px rgba(0, 0, 0, 0.28);
   animation: result-in 0.35s ease;
 }
 .game-complete__badge {

@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resize();
     window.addEventListener("resize", resize);
 
-    const colors = ["#58cc02", "#ffd166", "#89e219", "#46a302", "#ef476f", "#ffffff", "#8338ec"];
+    const colors = ["#8b5cf6", "#ffd166", "#a78bfa", "#6d28d9", "#ef476f", "#ffffff", "#8338ec"];
     const w = () => confettiCanvas.width;
     const h = () => confettiCanvas.height;
     const particles = Array.from({ length: 140 }, () => ({
