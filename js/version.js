@@ -1,10 +1,10 @@
 /* Auto-generated — do not edit. Run: npm run stamp */
 window.__MAPMAPMAPS_BUILD__ = {
   "app": "1.2.0",
-  "git": "bab3c7e",
+  "git": "77af8fe",
   "shell": "mapmapmaps-shell-v11",
   "ui": 5,
   "indexMtime": "2026-07-21T15:31:47.176Z",
-  "builtAt": "2026-07-21T15:49:47.642Z",
-  "stampedAt": "2026-07-21T15:49:47.642Z"
+  "builtAt": "2026-07-21T15:49:49.944Z",
+  "stampedAt": "2026-07-21T15:49:49.944Z"
 };
