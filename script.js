@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resize();
     window.addEventListener("resize", resize);
 
-    const colors = ["#ff6b35", "#ffd166", "#06d6a0", "#118ab2", "#ef476f", "#ffffff", "#8338ec"];
+    const colors = ["#38bdf8", "#ffd166", "#06d6a0", "#118ab2", "#ef476f", "#ffffff", "#8338ec"];
     const w = () => confettiCanvas.width;
     const h = () => confettiCanvas.height;
     const particles = Array.from({ length: 140 }, () => ({
@@ -354,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
       pinLatLng = { lat: e.lngLat.lat, lng: e.lngLat.lng };
       if (pinMarker) pinMarker.setLngLat(e.lngLat);
       else {
-        pinMarker = new maplibregl.Marker({ color: "#ff6b35", draggable: true })
+        pinMarker = new maplibregl.Marker({ color: "#38bdf8", draggable: true })
           .setLngLat(e.lngLat)
           .addTo(guessMap);
         pinMarker.on("dragend", () => {
