@@ -2,9 +2,9 @@
 window.__MAPMAPMAPS_BUILD__ = {
   "app": "1.2.0",
   "git": "fc0bbcb",
-  "shell": "mapmapmaps-shell-v10",
+  "shell": "mapmapmaps-shell-v11",
   "ui": 5,
   "indexMtime": "2026-07-21T15:31:47.176Z",
-  "builtAt": "2026-07-21T15:49:27.525Z",
-  "stampedAt": "2026-07-21T15:49:27.525Z"
+  "builtAt": "2026-07-21T15:49:36.555Z",
+  "stampedAt": "2026-07-21T15:49:36.555Z"
 };
