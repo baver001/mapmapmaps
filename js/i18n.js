@@ -82,7 +82,7 @@
       distanceKm: "{d} км",
       placeholderGuess: "Город или страна…",
       guess: "Угадать",
-      newSpot: "Новый кадр",
+      newSpot: "Другое место",
       pickOnMap: "На карте",
       closeMap: "Закрыть карту",
       streetView: "← Улица",

@@ -13,6 +13,10 @@ const SHELL = [
   "/version.json",
   "/data/seeds.json",
   "/image/mascot-pin.svg",
+  "/image/favicon.svg",
+  "/image/apple-touch-icon.svg",
+  "/image/app-icon-maskable.svg",
+  "/image/title.svg",
 ];
 
 /** Path without query — bust ?v= on CSS/JS still hits network-first. */

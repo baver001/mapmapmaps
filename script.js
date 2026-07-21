@@ -377,6 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function initMascotEyes() {
+    if (window.matchMedia("(min-width: 768px)").matches) return;
     const mascot = document.querySelector("#hud-mascot");
     const eyes = document.querySelector("#mascot-eyes");
     const svg = document.querySelector(".hud__mascot-svg");
