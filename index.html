@@ -238,7 +238,10 @@
         window.addEventListener("load", () => {
           const skip = (worker) => worker?.postMessage("skipWaiting");
           navigator.serviceWorker
-            .register(`/sw.js?v=ed8d733"updatefound", () => {
+            .register("/sw.js?v=ed8d733")
+            .then((reg) => {
+              if (reg.waiting) skip(reg.waiting);
+              reg.addEventListener("updatefound", () => {
                 const installing = reg.installing;
                 installing?.addEventListener("statechange", () => {
                   if (installing.state === "installed" && navigator.serviceWorker.controller) {
