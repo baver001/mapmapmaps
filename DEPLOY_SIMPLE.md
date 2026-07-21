@@ -57,8 +57,8 @@ cp deploy.config.example.json deploy.config.json
 npm run setup:github-secrets
 ```
 
-Workflow **Deploy VPS** сработает только когда заданы все три `VPS_*` secrets.  
-Иначе job `deploy-skipped` — без красного «failure».
+Workflow **Deploy VPS** — только **Run workflow** в Actions (нужны `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`).  
+Для обычного цикла используй **autopull** (раздел A).
 
 ---
 
