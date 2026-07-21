@@ -1,13 +1,16 @@
 /* Cache app shell only. Mapillary/OSM always from network. */
-const CACHE = "mapmapmaps-shell-v7";
+const CACHE = "mapmapmaps-shell-v8";
 const SHELL = [
   "/",
   "/index.html",
   "/script.js",
+  "/js/version.js",
+  "/js/build-diagnostics.js",
   "/js/i18n.js",
   "/js/sfx.js",
   "/css/style.css",
   "/manifest.webmanifest",
+  "/version.json",
   "/data/seeds.json",
   "/image/mascot-pin.svg",
 ];

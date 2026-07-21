@@ -11,8 +11,15 @@ import {
   handleMapillaryAction,
   loadSeedsFromFile,
 } from "../lib/mapillary-api.mjs";
+import { getBuildInfo } from "../lib/build-info.mjs";
 
 const ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..");
+const SERVER_STARTED = new Date().toISOString();
+let cachedBuildInfo = null;
+function buildInfo() {
+  if (!cachedBuildInfo) cachedBuildInfo = getBuildInfo(ROOT);
+  return { ...cachedBuildInfo, serverStarted: SERVER_STARTED };
+}
 const SEEDS_PATH = join(ROOT, "data", "seeds.json");
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = Number(process.env.PORT || 8787);
@@ -128,6 +135,15 @@ const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
 
+    if (url.pathname === "/api/version") {
+      if (req.method !== "GET") {
+        sendJson(res, 405, { error: "Method not allowed" });
+        return;
+      }
+      sendJson(res, 200, buildInfo());
+      return;
+    }
+
     if (url.pathname === "/api/mapillary") {
       await handleApi(req, res, url);
       return;
@@ -145,6 +161,8 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, HOST, () => {
   const hasToken = Boolean(token());
+  const info = buildInfo();
   console.log(`MapMapMaps listening on http://${HOST}:${PORT}`);
+  console.log(`Build v${info.app} · ${info.git} · ${info.shell} · ui${info.ui}`);
   console.log(hasToken ? "MAPILLARY_ACCESS_TOKEN: set" : "MAPILLARY_ACCESS_TOKEN: MISSING");
 });

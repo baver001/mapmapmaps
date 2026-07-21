@@ -26,6 +26,10 @@ cd "${APP_DIR}"
 git fetch origin "${BRANCH}"
 git reset --hard "origin/${BRANCH}"
 
+if command -v node >/dev/null 2>&1; then
+  node "${APP_DIR}/scripts/stamp-version.mjs" || true
+fi
+
 sudo tee "${APP_DIR}/.env.local" >/dev/null <<EOF
 MAPILLARY_ACCESS_TOKEN=${MAPILLARY_ACCESS_TOKEN}
 HOST=127.0.0.1

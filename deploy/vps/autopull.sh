@@ -15,6 +15,9 @@ LOCAL=$(sudo -u "${RUN_USER}" git rev-parse HEAD)
 REMOTE=$(sudo -u "${RUN_USER}" git rev-parse "origin/${BRANCH}")
 if [[ "${LOCAL}" != "${REMOTE}" ]]; then
   sudo -u "${RUN_USER}" git reset --hard "origin/${BRANCH}"
+  if command -v node >/dev/null 2>&1; then
+    sudo -u "${RUN_USER}" node "${APP_DIR}/scripts/stamp-version.mjs" || true
+  fi
   systemctl restart mapmapmaps
   logger -t mapmapmaps-autopull "Deployed ${REMOTE:0:8}"
 fi

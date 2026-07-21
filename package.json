@@ -10,7 +10,8 @@
     "deploy:preview": "wrangler pages deploy . --project-name=mapmapmaps --branch=preview --commit-dirty=true",
     "dev": "wrangler pages dev . --compatibility-date=2024-01-01",
     "preview": "npm run dev",
-    "verify": "node scripts/verify-local.mjs"
+    "verify": "node scripts/verify-local.mjs",
+    "stamp": "node scripts/stamp-version.mjs"
   },
   "keywords": [
     "mapillary",

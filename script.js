@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const buildBadge = document.querySelector("#build-badge");
+  const applyBuildBadge =
+    window.MapMapMapsBuild?.mountBuildBadge(buildBadge) ?? (() => {});
+  window.MapMapMapsBuild?.logBuildDiagnostics()?.then(applyBuildBadge);
+
   if (window.MapMapMapsI18n) MapMapMapsI18n.applyStatic();
   const t = (key, vars) => window.MapMapMapsI18n?.t(key, vars) ?? key;
   const fmtNum = (n) => window.MapMapMapsI18n?.formatNumber(n) ?? String(n);

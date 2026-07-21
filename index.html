@@ -15,6 +15,7 @@
     <meta property="og:url" content="https://mapmapmaps.com/" />
     <link rel="canonical" href="https://mapmapmaps.com/" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="mapmapmaps-build" content="1.2.0+9e2ce43+ui3" />
     <meta name="theme-color" content="#00c896" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -65,6 +66,10 @@
           <span class="hud__score-label" data-i18n="runLabel">Run</span>
           <span class="hud__score-value" id="score-pill">0</span>
         </div>
+
+        <button type="button" class="build-badge" id="build-badge" hidden aria-live="polite">
+          v—
+        </button>
 
         <div class="run-track" id="progress" data-i18n="progressAria" data-i18n-attr="aria-label">
           <div class="run-track__meta">
@@ -213,13 +218,15 @@
       </button>
     </main>
 
+    <script src="/js/version.js?v=9e2ce43"></script>
+    <script src="/js/build-diagnostics.js?v=9e2ce43"></script>
     <script src="/js/i18n.js"></script>
     <script src="/js/sfx.js"></script>
-    <script src="/script.js?v=580d436"></script>
+    <script src="/script.js?v=9e2ce43"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js?v=580d436").catch(() => {});
+          navigator.serviceWorker.register("/sw.js?v=9e2ce43").catch(() => {});
         });
       }
     </script>

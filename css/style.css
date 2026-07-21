@@ -148,6 +148,33 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.build-badge {
+  pointer-events: all;
+  grid-column: 3;
+  grid-row: 2;
+  justify-self: end;
+  margin-top: -2px;
+  padding: 2px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-pill);
+  background: rgba(15, 23, 42, 0.55);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 9px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.build-badge.is-stale {
+  border-color: rgba(251, 191, 36, 0.85);
+  color: #fde68a;
+  background: rgba(120, 53, 15, 0.65);
+}
+.build-badge.is-stale::before {
+  content: "⚠ ";
+}
+
 /* ── Run track (5-stop run) ── */
 .run-track {
   pointer-events: none;
