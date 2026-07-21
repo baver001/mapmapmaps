@@ -3,6 +3,6 @@
     d="M20 2C9.5 2 2.5 10 2.5 18.5C2.5 27.5 17 45.5 20 46.5C23 45.5 37.5 27.5 37.5 18.5C37.5 10 30.5 2 20 2Z"
     fill="#8B5CF6"
   />
-  <rect x="13" y="18.5" width="6" height="6" rx="1.75" fill="#F8FAFC"/>
-  <rect x="21" y="18.5" width="6" height="6" rx="1.75" fill="#F8FAFC"/>
+  <rect x="10" y="18" width="7" height="7" rx="2" fill="#F8FAFC"/>
+  <rect x="24" y="18" width="7" height="7" rx="2" fill="#F8FAFC"/>
 </svg>

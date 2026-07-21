@@ -354,13 +354,14 @@ body {
   width: 100%;
   min-width: 0;
   border-radius: var(--radius-pill);
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 4px 0 var(--input-3d);
-  transition: box-shadow 0.12s ease;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
 }
-.dock__combo:focus-within {
-  box-shadow: 0 4px 0 var(--input-3d), 0 0 0 3px var(--accent-surface);
+.dock__combo:focus-within .dock__field {
+  box-shadow:
+    0 4px 0 var(--input-3d),
+    0 0 0 3px var(--accent-surface);
 }
 .dock__field {
   position: relative;
@@ -368,10 +369,17 @@ body {
   min-width: 0;
   display: flex;
   align-items: stretch;
+  border-radius: var(--radius-pill) 0 0 var(--radius-pill);
+  background: #fff;
+  box-shadow: 0 4px 0 var(--input-3d);
+  transition: box-shadow 0.12s ease;
+  overflow: hidden;
 }
 .dock__icon {
   position: absolute;
   left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--muted);
   font-size: 18px;
   line-height: 1;
@@ -414,9 +422,15 @@ body {
   padding: 0 20px;
   border-radius: 0 var(--radius-pill) var(--radius-pill) 0;
   border-left: none;
+  border-bottom: none;
+  box-shadow: 0 4px 0 var(--accent-3d);
+}
+.dock__combo:focus-within .dock__guess.btn--primary {
+  box-shadow: 0 4px 0 var(--accent-3d);
 }
 .dock__guess.btn--primary:active:not(:disabled) {
   transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--accent-3d);
 }
 .dock__input::placeholder {
   color: #94a3b8;

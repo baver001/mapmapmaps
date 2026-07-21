@@ -1,5 +1,5 @@
 /* Cache app shell only. Mapillary/OSM always from network. */
-const CACHE = "mapmapmaps-shell-v11";
+const CACHE = "mapmapmaps-shell-v12";
 const SHELL = [
   "/",
   "/index.html",
@@ -33,7 +33,12 @@ function isShellAsset(pathname) {
     pathname.startsWith("/js/") ||
     pathname.startsWith("/css/") ||
     pathname === "/manifest.webmanifest" ||
-    pathname.startsWith("/image/mascot-pin")
+    pathname === "/data/seeds.json" ||
+    pathname.startsWith("/image/mascot-pin") ||
+    pathname.startsWith("/image/favicon") ||
+    pathname.startsWith("/image/apple-touch-icon") ||
+    pathname.startsWith("/image/app-icon-maskable") ||
+    pathname.startsWith("/image/title")
   );
 }
 
@@ -44,7 +49,17 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data === "skipWaiting") self.skipWaiting();
+  if (event.data === "skipWaiting") {
+    self.skipWaiting();
+    return;
+  }
+  if (event.data?.type === "clearShell") {
+    event.waitUntil(
+      caches.delete(CACHE).then(() => {
+        event.ports[0]?.postMessage({ ok: true });
+      })
+    );
+  }
 });
 
 self.addEventListener("activate", (event) => {
@@ -77,7 +92,7 @@ self.addEventListener("fetch", (event) => {
 
   if (isShellAsset(pathname)) {
     event.respondWith(
-      fetch(request)
+      fetch(new Request(request, { cache: "no-store" }))
         .then((response) => {
           cachePut(request, response);
           return response;
