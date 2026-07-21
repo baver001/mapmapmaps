@@ -15,14 +15,14 @@
     <meta property="og:url" content="https://mapmapmaps.com/" />
     <link rel="canonical" href="https://mapmapmaps.com/" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="mapmapmaps-build" content="1.2.0+05ff409+ui5" />
+    <meta name="mapmapmaps-build" content="1.2.0+0351e25+ui5" />
     <meta name="theme-color" content="#8b5cf6" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>MapMapMaps — Guess the location</title>
-    <link rel="icon" href="/image/favicon.svg" type="image/svg+xml" sizes="any" />
-    <link rel="apple-touch-icon" href="/image/apple-touch-icon.svg" />
-    <link rel="stylesheet" href="/css/style.css?v=05ff409" />
+    <link rel="icon" href="/image/favicon.svg?v=2" type="image/svg+xml" sizes="any" />
+    <link rel="apple-touch-icon" href="/image/apple-touch-icon.svg?v=2" />
+    <link rel="stylesheet" href="/css/style.css?v=0351e25" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/mapillary-js@4.1.2/dist/mapillary.min.css"
@@ -222,11 +222,11 @@
       </button>
     </main>
 
-    <script src="/js/version.js?v=05ff409"></script>
-    <script src="/js/build-diagnostics.js?v=05ff409"></script>
+    <script src="/js/version.js?v=0351e25"></script>
+    <script src="/js/build-diagnostics.js?v=0351e25"></script>
     <script src="/js/i18n.js"></script>
     <script src="/js/sfx.js"></script>
-    <script src="/script.js?v=05ff409"></script>
+    <script src="/script.js?v=0351e25"></script>
     <script>
       (function () {
         if (!("serviceWorker" in navigator)) return;
@@ -242,8 +242,9 @@
         window.addEventListener("load", () => {
           const skip = (worker) => worker?.postMessage("skipWaiting");
           navigator.serviceWorker
-            .register("/sw.js?v=05ff409")
+            .register(`/sw.js?v=${git}`)
             .then((reg) => {
+              reg.update();
               if (reg.waiting) skip(reg.waiting);
               reg.addEventListener("updatefound", () => {
                 const installing = reg.installing;
