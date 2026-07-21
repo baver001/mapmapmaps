@@ -379,10 +379,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function initMascotEyes() {
     const mascot = document.querySelector("#hud-mascot");
     const eyes = document.querySelector("#mascot-eyes");
-    if (!mascot || !eyes) return;
+    const svg = document.querySelector(".hud__mascot-svg");
+    if (!mascot || !eyes || !svg) return;
 
-    const maxX = 2.2;
-    const maxY = 1.8;
+    const maxX = 2.4;
+    const maxY = 2;
     let raf = 0;
 
     const aim = (clientX, clientY) => {
@@ -411,6 +412,23 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       true
     );
+
+    const scheduleBlink = () => {
+      const delay = 2800 + Math.random() * 5200;
+      window.setTimeout(() => {
+        if (document.hidden) {
+          scheduleBlink();
+          return;
+        }
+        svg.classList.remove("is-blink");
+        void svg.offsetWidth;
+        svg.classList.add("is-blink");
+        window.setTimeout(() => svg.classList.remove("is-blink"), 180);
+        scheduleBlink();
+      }, delay);
+    };
+
+    scheduleBlink();
   }
 
   /** Short readable place label from Nominatim result or address parts. */

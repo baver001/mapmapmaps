@@ -110,6 +110,23 @@ body {
   overflow: visible;
   filter: drop-shadow(0 var(--accent-bevel) 0 var(--accent-3d));
 }
+.hud__mascot-svg .mascot-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.hud__mascot-svg.is-blink .mascot-eye {
+  animation: mascot-blink 0.14s ease-in-out;
+}
+@keyframes mascot-blink {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  42%,
+  58% {
+    transform: scaleY(0.12);
+  }
+}
 .hud__score-chip {
   grid-column: 3;
   grid-row: 1;
@@ -420,7 +437,7 @@ body {
 .btn--primary {
   background: var(--accent);
   color: #fff;
-  border: 2px solid var(--accent-light);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   border-bottom: var(--accent-bevel) solid var(--accent-3d);
   box-shadow: none;
   text-shadow: none;
@@ -436,7 +453,7 @@ body {
 .btn--soft {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.14);
   border-bottom: 3px solid rgba(0, 0, 0, 0.28);
   min-height: 40px;
   padding: 0 14px;
@@ -473,7 +490,7 @@ body {
   animation: spin 0.7s linear infinite;
 }
 .link-btn {
-  border: 2px solid rgba(255, 255, 255, 0.88);
+  border: 2px solid rgba(255, 255, 255, 0.32);
   background: rgba(15, 23, 42, 0.4);
   color: #fff;
   font: inherit;
@@ -489,7 +506,7 @@ body {
 }
 .link-btn:hover {
   background: rgba(76, 29, 149, 0.45);
-  border-color: rgba(196, 181, 253, 0.75);
+  border-color: rgba(255, 255, 255, 0.42);
 }
 .link-btn:active {
   transform: translateY(2px);
