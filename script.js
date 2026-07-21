@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const buildBadge = document.querySelector("#build-badge");
-  const applyBuildBadge =
-    window.MapMapMapsBuild?.mountBuildBadge(buildBadge) ?? (() => {});
-  window.MapMapMapsBuild?.logBuildDiagnostics()?.then(applyBuildBadge);
+  window.MapMapMapsBuild?.logBuildDiagnostics();
 
   if (window.MapMapMapsI18n) MapMapMapsI18n.applyStatic();
   const t = (key, vars) => window.MapMapMapsI18n?.t(key, vars) ?? key;
@@ -394,7 +391,7 @@ document.addEventListener("DOMContentLoaded", () => {
         raf = 0;
         const box = mascot.getBoundingClientRect();
         const cx = box.left + box.width * 0.5;
-        const cy = box.top + box.height * 0.32;
+        const cy = box.top + box.height * 0.36;
         const nx = (clientX - cx) / (box.width || 1);
         const ny = (clientY - cy) / (box.height || 1);
         const tx = Math.max(-maxX, Math.min(maxX, nx * 5));

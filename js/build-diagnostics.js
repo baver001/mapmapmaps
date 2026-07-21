@@ -1,14 +1,7 @@
-/** Client-side build diagnostics (version.js + /api/version). */
+/** Client-side build diagnostics (version.js + /api/version). Console only — no on-screen badge. */
 (function (global) {
   function clientBuild() {
     return global.__MAPMAPMAPS_BUILD__ || null;
-  }
-
-  function formatBadge(client, server) {
-    const app = server?.app || client?.app || "?";
-    const git = server?.git || client?.git || "?";
-    const ui = server?.ui ?? client?.ui ?? "?";
-    return `v${app} · ${git} · ui${ui}`;
   }
 
   function isStale(client, server) {
@@ -59,8 +52,8 @@
           console.warn("MapMapMaps STALE CLIENT CACHE", {
             clientGit: client?.git,
             serverGit: server.git,
-            clientUi: client?.ui,
-            serverUi: server.ui,
+            clientShell: client?.shell,
+            serverShell: server.shell,
           });
           maybeReloadForDeploy(server);
         }
@@ -72,44 +65,8 @@
       });
   }
 
-  function mountBuildBadge(button) {
-    if (!button) return () => {};
-    button.hidden = false;
-
-    let lastPair = { client: clientBuild(), server: null };
-
-    const refresh = (client, server) => {
-      lastPair = { client, server };
-      const stale = isStale(client, server);
-      button.classList.toggle("is-stale", stale);
-      button.textContent = formatBadge(client, server);
-      const title = [
-        client ? `Client: ${client.app} ${client.git} (${client.shell})` : "Client: unknown",
-        server ? `Server: ${server.app} ${server.git} (${server.shell})` : "Server: unknown",
-        stale ? "— click to reload and pick up new deploy" : "Click to copy build info",
-      ]
-        .filter(Boolean)
-        .join("\n");
-      button.title = title;
-    };
-
-    refresh(lastPair.client, null);
-
-    button.addEventListener("click", () => {
-      if (isStale(lastPair.client, lastPair.server)) {
-        global.location.reload();
-        return;
-      }
-      const text = button.title || button.textContent;
-      navigator.clipboard?.writeText(text).catch(() => {});
-    });
-
-    return (pair) => refresh(pair.client, pair.server);
-  }
-
   global.MapMapMapsBuild = {
     clientBuild,
     logBuildDiagnostics,
-    mountBuildBadge,
   };
 })(window);

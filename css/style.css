@@ -8,6 +8,7 @@
   --accent-3d: #6d28d9;
   --accent-light: #a78bfa;
   --accent-bevel: 4px;
+  --accent-surface: rgba(139, 92, 246, 0.12);
   --input-3d: #b8c4d4;
   --dock-lift: 25vh;
   --ink: #0f172a;
@@ -104,7 +105,7 @@ body {
 }
 .hud__mascot-svg {
   display: block;
-  width: clamp(30px, 8vw, 36px);
+  width: clamp(34px, 9vw, 42px);
   height: auto;
   overflow: visible;
   filter: drop-shadow(0 var(--accent-bevel) 0 var(--accent-3d));
@@ -118,8 +119,8 @@ body {
   padding: 6px 12px 8px;
   border-radius: 14px;
   text-align: center;
-  background: linear-gradient(180deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 23, 42, 0.88) 100%);
-  border: 2px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(46, 16, 101, 0.55) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 2px solid rgba(167, 139, 250, 0.35);
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
   transition: transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
@@ -152,33 +153,6 @@ body {
   color: #fff;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
-}
-
-.build-badge {
-  pointer-events: all;
-  grid-column: 3;
-  grid-row: 2;
-  justify-self: end;
-  margin-top: -2px;
-  padding: 2px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: var(--radius-pill);
-  background: rgba(15, 23, 42, 0.55);
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 9px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-}
-.build-badge.is-stale {
-  border-color: rgba(251, 191, 36, 0.85);
-  color: #fde68a;
-  background: rgba(120, 53, 15, 0.65);
-}
-.build-badge.is-stale::before {
-  content: "⚠ ";
 }
 
 /* ── Run track (5-stop run) ── */
@@ -374,11 +348,11 @@ body {
 }
 .dock__input:focus {
   outline: none;
-  border-color: #dbeafe;
-  box-shadow: 0 4px 0 var(--input-3d);
+  border-color: var(--accent-light);
+  box-shadow: 0 4px 0 var(--input-3d), 0 0 0 3px var(--accent-surface);
 }
 .dock__input:focus-visible {
-  border-color: #cbd5e1;
+  border-color: var(--accent);
 }
 .dock__input:active {
   transform: translateY(3px);
@@ -412,7 +386,8 @@ body {
 }
 .dock__autocomplete li:hover,
 .dock__autocomplete li:focus {
-  background: #eff6ff;
+  background: var(--accent-surface);
+  color: var(--ink);
 }
 .dock__links {
   display: flex;
@@ -459,12 +434,22 @@ body {
   border-bottom-width: 2px;
 }
 .btn--soft {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.12);
   color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 3px solid rgba(0, 0, 0, 0.28);
   min-height: 40px;
   padding: 0 14px;
   font-size: 13px;
+  transition: transform 0.08s ease, border-bottom-width 0.08s ease, background 0.12s ease;
+}
+.btn--soft:hover:not(:disabled) {
+  background: rgba(167, 139, 250, 0.22);
+  border-color: rgba(167, 139, 250, 0.45);
+}
+.btn--soft:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
 }
 .btn--sm {
   min-height: 40px;
@@ -488,8 +473,8 @@ body {
   animation: spin 0.7s linear infinite;
 }
 .link-btn {
-  border: 2px solid rgba(255, 255, 255, 0.92);
-  background: rgba(15, 23, 42, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  background: rgba(15, 23, 42, 0.4);
   color: #fff;
   font: inherit;
   font-size: 12px;
@@ -497,15 +482,18 @@ body {
   cursor: pointer;
   padding: 7px 14px;
   border-radius: var(--radius-pill);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
+  border-bottom-width: 3px;
+  border-bottom-color: rgba(0, 0, 0, 0.35);
+  transition: transform 0.08s ease, border-bottom-width 0.08s ease, background 0.12s ease,
+    border-color 0.12s ease;
 }
 .link-btn:hover {
-  background: rgba(15, 23, 42, 0.48);
+  background: rgba(76, 29, 149, 0.45);
+  border-color: rgba(196, 181, 253, 0.75);
 }
 .link-btn:active {
-  transform: translateY(3px);
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0.35);
+  transform: translateY(2px);
+  border-bottom-width: 1px;
 }
 .link-btn--dark {
   color: var(--muted);
