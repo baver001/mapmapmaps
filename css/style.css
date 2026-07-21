@@ -1,12 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap");
 
 :root {
-  --accent: #00c896;
-  --accent-dark: #008566;
-  --accent-soft: rgba(0, 200, 150, 0.32);
-  --accent-glow: rgba(0, 230, 170, 0.5);
-  --accent-3d: #006b52;
-  --accent-light: #00e8ad;
+  --accent: #58cc02;
+  --accent-dark: #46a302;
+  --accent-soft: rgba(88, 204, 2, 0.32);
+  --accent-glow: rgba(137, 226, 25, 0.55);
+  --accent-3d: #3a8800;
+  --accent-light: #89e219;
   --input-3d: #b8c4d4;
   --dock-lift: 25vh;
   --ink: #0f172a;
@@ -96,12 +96,17 @@ body {
   grid-column: 1;
   grid-row: 1;
   pointer-events: none;
-  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
 }
 .hud__mascot-svg {
   display: block;
   width: clamp(30px, 8vw, 36px);
   height: auto;
+}
+.hud__mascot-svg path {
+  stroke: #fff;
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  paint-order: stroke fill;
 }
 .hud__score-chip {
   grid-column: 3;
@@ -137,7 +142,7 @@ body {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(220, 255, 245, 0.95);
+  color: rgba(220, 255, 200, 0.95);
 }
 .hud__score-value {
   display: block;
@@ -236,7 +241,7 @@ body {
   height: 100%;
   width: 0%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #008566 0%, var(--accent) 50%, #00e8ad 100%);
+  background: linear-gradient(90deg, #46a302 0%, var(--accent) 50%, var(--accent-light) 100%);
   box-shadow: none;
   transition: width 0.65s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
@@ -437,10 +442,10 @@ body {
   cursor: not-allowed;
 }
 .btn--primary {
-  background: linear-gradient(180deg, #00e8ad 0%, var(--accent) 48%, var(--accent-dark) 100%);
+  background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 48%, var(--accent-dark) 100%);
   color: #fff;
-  border: 2px solid #00a67e;
-  border-bottom: 2px solid #007a5c;
+  border: 2px solid #7edb2a;
+  border-bottom: 2px solid var(--accent-dark);
   box-shadow: 0 4px 0 var(--accent-3d);
   text-shadow: 0 1px 2px rgba(0, 40, 30, 0.45);
   transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.12s ease;
@@ -832,7 +837,7 @@ body {
   background: linear-gradient(180deg, #ffffff 0%, #fff8f4 100%);
   border-radius: 24px;
   padding: 28px 22px 22px;
-  border: 3px solid #00a67e;
+  border: 3px solid #7edb2a;
   box-shadow: 0 8px 0 var(--accent-light), 0 24px 48px rgba(0, 0, 0, 0.28);
   animation: result-in 0.35s ease;
 }

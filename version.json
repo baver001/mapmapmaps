@@ -1,9 +1,9 @@
 {
   "app": "1.2.0",
-  "git": "7a04432",
-  "shell": "mapmapmaps-shell-v8",
-  "ui": 3,
-  "indexMtime": "2026-07-21T14:22:49.247Z",
-  "builtAt": "2026-07-21T14:23:06.695Z",
-  "stampedAt": "2026-07-21T14:23:06.695Z"
+  "git": "f803910",
+  "shell": "mapmapmaps-shell-v9",
+  "ui": 4,
+  "indexMtime": "2026-07-21T15:26:06.385Z",
+  "builtAt": "2026-07-21T15:26:13.711Z",
+  "stampedAt": "2026-07-21T15:26:13.711Z"
 }

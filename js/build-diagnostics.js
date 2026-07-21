@@ -19,7 +19,7 @@
 
     console.info(
       `%cMapMapMaps build%c ${label}`,
-      "font-weight:700;color:#00c896",
+      "font-weight:700;color:#58cc02",
       "font-weight:600;color:inherit"
     );
 
