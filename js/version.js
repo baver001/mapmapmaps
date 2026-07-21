@@ -5,6 +5,6 @@ window.__MAPMAPMAPS_BUILD__ = {
   "shell": "mapmapmaps-shell-v10",
   "ui": 5,
   "indexMtime": "2026-07-21T15:31:47.176Z",
-  "builtAt": "2026-07-21T15:49:24.981Z",
-  "stampedAt": "2026-07-21T15:49:24.981Z"
+  "builtAt": "2026-07-21T15:49:27.525Z",
+  "stampedAt": "2026-07-21T15:49:27.525Z"
 };
