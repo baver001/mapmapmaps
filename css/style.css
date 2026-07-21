@@ -373,7 +373,7 @@ body {
   background: #fff;
   box-shadow: 0 4px 0 var(--input-3d);
   transition: box-shadow 0.12s ease;
-  overflow: hidden;
+  overflow: visible;
 }
 .dock__icon {
   position: absolute;
@@ -1180,14 +1180,15 @@ body {
     font-size: 28px;
   }
   .result {
-    padding: 10px;
-    padding-bottom: calc(10px + var(--safe-bottom));
-    align-items: flex-end;
+    padding: 0;
+    align-items: stretch;
   }
   .result__card {
-    padding: 12px 12px 10px;
-    max-height: calc(100dvh - 16px - var(--safe-bottom));
-    border-radius: 16px;
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+    padding: max(12px, env(safe-area-inset-top)) 12px calc(10px + var(--safe-bottom));
   }
   .result__cheer {
     font-size: 17px;
@@ -1241,10 +1242,10 @@ body {
   }
   .result__map {
     margin-top: 8px;
-    height: 118px;
-    min-height: 118px;
-    max-height: 130px;
-    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    flex: 1 1 auto;
   }
   .result__next {
     margin-top: 8px;
