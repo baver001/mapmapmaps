@@ -5,11 +5,11 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#141210",
-  "theme_color": "#38bdf8",
+  "theme_color": "#00c896",
   "lang": "en",
   "icons": [
     {
-      "src": "/image/map_icon.svg",
+      "src": "/image/mascot-pin.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

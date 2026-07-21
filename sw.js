@@ -1,12 +1,15 @@
 /* Cache app shell only. Mapillary/OSM always from network. */
-const CACHE = "mapmapmaps-shell-v2";
+const CACHE = "mapmapmaps-shell-v4";
 const SHELL = [
   "/",
   "/index.html",
   "/script.js",
+  "/js/i18n.js",
+  "/js/sfx.js",
   "/css/style.css",
   "/manifest.webmanifest",
   "/data/seeds.json",
+  "/image/mascot-pin.svg",
 ];
 
 self.addEventListener("install", (event) => {

@@ -1,3 +1,18 @@
-<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.8 13.3604L9.94765 10.8643L12.4438 9.71667L9.94765 8.56902L8.8 6.07292L7.65236 8.56902L5.15625 9.71667L7.65236 10.8643L8.8 13.3604ZM8.8 16.6833L6.62292 11.8938L1.83334 9.71667L6.62292 7.53958L8.8 2.75L10.9771 7.53958L15.7667 9.71667L10.9771 11.8938L8.8 16.6833ZM16.6833 19.25L15.6063 16.8438L13.2 15.7667L15.6063 14.6667L16.6833 12.2833L17.7833 14.6667L20.1667 15.7667L17.7833 16.8438L16.6833 19.25Z" fill="#FFD540"/>
+<svg width="24" height="22" viewBox="0 0 24 22" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <circle cx="8" cy="13" r="6.5" fill="#FACC15" stroke="#CA8A04" stroke-width="1.2"/>
+  <circle cx="8" cy="13" r="4.5" fill="url(#coinGrad1)"/>
+  <ellipse cx="7" cy="11.5" rx="2" ry="1" fill="#FEF9C3" opacity="0.55"/>
+  <circle cx="16" cy="9" r="6.5" fill="#FACC15" stroke="#CA8A04" stroke-width="1.2"/>
+  <circle cx="16" cy="9" r="4.5" fill="url(#coinGrad2)"/>
+  <ellipse cx="15" cy="7.5" rx="2" ry="1" fill="#FEF9C3" opacity="0.55"/>
+  <defs>
+    <linearGradient id="coinGrad1" x1="5" y1="9" x2="11" y2="17" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FDE047"/>
+      <stop offset="1" stop-color="#EAB308"/>
+    </linearGradient>
+    <linearGradient id="coinGrad2" x1="13" y1="5" x2="19" y2="13" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FDE047"/>
+      <stop offset="1" stop-color="#EAB308"/>
+    </linearGradient>
+  </defs>
 </svg>

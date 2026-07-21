@@ -30,6 +30,9 @@ flowchart TD
 
 ### Готово
 
+- i18n: 9 языков (en, ru, es, de, fr, pt, zh, ja, ko), авто по `navigator.languages`
+- SFX: Web Audio (шаг, звёзды, финиш), кнопка 🔊 слева над Donate
+- HUD: трек прогресса под логотипом, счёт справа
 - UI v2: dock, map sheet, result modal, toast, keyboard (Enter/M/Esc)
 - Primary source: Mapillary 360° only
 - Random из seed DB (+ live fallback)

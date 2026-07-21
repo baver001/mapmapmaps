@@ -1,8 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
+  if (window.MapMapMapsI18n) MapMapMapsI18n.applyStatic();
+  const t = (key, vars) => window.MapMapMapsI18n?.t(key, vars) ?? key;
+  const fmtNum = (n) => window.MapMapMapsI18n?.formatNumber(n) ?? String(n);
+  const nominatimLang = () => window.MapMapMapsI18n?.localeTag?.() ?? "en";
+
+  const sfxToggle = document.querySelector("#sfx-toggle");
+  if (sfxToggle && window.MapMapMapsSfx) MapMapMapsSfx.bindToggle(sfxToggle);
+  const unlockAudio = () => window.MapMapMapsSfx?.unlock();
+  document.addEventListener("pointerdown", unlockAudio, { once: true, passive: true });
+
+  const donateBtn = document.querySelector("#donate-btn");
+  if (donateBtn) donateBtn.setAttribute("aria-label", t("donateTitle"));
+
   const appEl = document.querySelector("#app");
   const roundPill = document.querySelector("#round-pill");
   const scorePill = document.querySelector("#score-pill");
   const progressEl = document.querySelector("#progress");
+  const runTrackFill = document.querySelector("#run-track-fill");
+  const runPctEl = document.querySelector("#run-pct");
+  const scoreChip = document.querySelector(".hud__score-chip");
   const preloader = document.querySelector(".preloader");
   const mapPanel = document.querySelector("#map-panel");
   const mapToggle = document.querySelector("#map-toggle");
@@ -13,7 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const autocompleteEl = document.querySelector("#autocomplete");
   const guessBtn = document.querySelector("#guess-btn");
   const replaceBtn = document.querySelector("#replace-btn");
-  const clearPinBtn = document.querySelector("#clear-pin");
+  const mapPinHint = document.querySelector("#map-pin-hint");
+  const mapPinHintText = document.querySelector("#map-pin-hint-text");
+  const mapPinHintX = document.querySelector("#map-pin-hint-x");
   const nextBtn = document.querySelector("#next-btn");
   const resultEl = document.querySelector("#result");
   const resultRound = document.querySelector("#result-round");
@@ -21,6 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const resultDistance = document.querySelector("#result-distance");
   const resultGuessLabel = document.querySelector("#result-guess-label");
   const resultActualLabel = document.querySelector("#result-actual-label");
+  const resultCheer = document.querySelector("#result-cheer");
+  const resultGain = document.querySelector("#result-gain");
+  const resultStars = document.querySelectorAll("#result-stars .result__star");
   const toastEl = document.querySelector("#toast");
   const gameCompleteEl = document.querySelector("#game-complete");
   const confettiCanvas = document.querySelector("#confetti-canvas");
@@ -34,6 +55,39 @@ document.addEventListener("DOMContentLoaded", () => {
   const BEST_KEY = "mapmapmaps_personal_best_v1";
   const GAMES_KEY = "mapmapmaps_games_completed_v1";
   const MAP_STYLE = "https://tiles.openfreemap.org/styles/liberty";
+  const MASCOT_PIN_SRC = "./image/mascot-pin.svg";
+
+  function createMascotMarkerElement() {
+    const el = document.createElement("div");
+    el.className = "mascot-marker";
+    const img = document.createElement("img");
+    img.src = MASCOT_PIN_SRC;
+    img.alt = "";
+    img.width = 36;
+    img.height = 44;
+    el.appendChild(img);
+    return el;
+  }
+
+  function addMascotMarker(lngLat, map, draggable) {
+    return new maplibregl.Marker({
+      element: createMascotMarkerElement(),
+      anchor: "bottom",
+      draggable: Boolean(draggable),
+    })
+      .setLngLat(lngLat)
+      .addTo(map);
+  }
+
+  function syncMapPinHint() {
+    if (!mapPinHint || !mapPinHintText) return;
+    const hasPin = Boolean(pinLatLng);
+    mapPinHintText.textContent = hasPin ? t("clearPin") : t("dropPin");
+    mapPinHint.classList.toggle("is-clear", hasPin);
+    mapPinHint.disabled = !hasPin;
+    if (mapPinHintX) mapPinHintX.hidden = !hasPin;
+    mapPinHint.setAttribute("aria-label", hasPin ? t("clearPin") : t("dropPin"));
+  }
 
   let viewer = null;
   let accessToken = null;
@@ -58,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function formatPts(n) {
-    return `${n.toLocaleString("en-US")} pts`;
+    return `${fmtNum(n)} ${t("pts")}`;
   }
 
   function launchConfetti(durationMs = 4200) {
@@ -75,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resize();
     window.addEventListener("resize", resize);
 
-    const colors = ["#38bdf8", "#ffd166", "#06d6a0", "#118ab2", "#ef476f", "#ffffff", "#8338ec"];
+    const colors = ["#00c896", "#ffd166", "#06d6a0", "#008566", "#ef476f", "#ffffff", "#8338ec"];
     const w = () => confettiCanvas.width;
     const h = () => confettiCanvas.height;
     const particles = Array.from({ length: 140 }, () => ({
@@ -151,21 +205,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (isFirstFinish) {
       gameCompleteBadge.hidden = false;
-      gameCompleteBadge.textContent = "First game complete!";
-      gameCompleteSub.textContent = "Your score is saved on this device. Beat it next time!";
+      gameCompleteBadge.textContent = t("firstComplete");
+      gameCompleteSub.textContent = t("firstCompleteSub");
       launchConfetti();
+      window.MapMapMapsSfx?.playGameComplete();
     } else if (isNewRecord) {
       gameCompleteBadge.hidden = false;
-      gameCompleteBadge.textContent = "New personal best!";
-      gameCompleteSub.textContent = `You beat your previous record of ${formatPts(prevBest)}.`;
+      gameCompleteBadge.textContent = t("newBest");
+      gameCompleteSub.textContent = t("beatRecord", { score: formatPts(prevBest) });
       launchConfetti();
+      window.MapMapMapsSfx?.playGameComplete();
     } else {
       gameCompleteBadge.hidden = true;
       const diff = bestNow - totalScore;
       gameCompleteSub.textContent =
         diff > 0
-          ? `${formatPts(diff)} away from your record — try again!`
-          : "Great run! See if you can go even higher.";
+          ? t("awayFromRecord", { diff: formatPts(diff) })
+          : t("greatRun");
     }
   }
 
@@ -190,15 +246,53 @@ document.addEventListener("DOMContentLoaded", () => {
     }, ms);
   }
 
-  function renderHud() {
-    roundPill.textContent = `Round ${roundIndex}/${ROUNDS_PER_GAME}`;
-    scorePill.textContent = `${gameScore.toLocaleString("en-US")} pts`;
+  function cheerMessage(points) {
+    if (points >= 4500) return t("cheerPerfect");
+    if (points >= 3500) return t("cheerBrilliant");
+    if (points >= 2500) return t("cheerGreat");
+    if (points >= 1500) return t("cheerNice");
+    if (points >= 800) return t("cheerKeep");
+    return t("cheerNext");
+  }
 
-    const dots = progressEl.querySelectorAll(".hud__dot");
-    dots.forEach((dot, i) => {
-      dot.classList.remove("is-active", "is-done");
-      if (i + 1 < roundIndex) dot.classList.add("is-done");
-      else if (i + 1 === roundIndex) dot.classList.add("is-active");
+  function starCount(points) {
+    if (points >= 4000) return 3;
+    if (points >= 2200) return 2;
+    if (points >= 900) return 1;
+    return 0;
+  }
+
+  function popScoreChip() {
+    if (!scoreChip) return;
+    scoreChip.classList.remove("is-pop");
+    void scoreChip.offsetWidth;
+    scoreChip.classList.add("is-pop");
+  }
+
+  function renderHud(options = {}) {
+    const completedStops =
+      options.completedStops ?? Math.max(0, roundIndex - 1);
+    const pulseStep = options.pulseStep ?? null;
+    const pct = Math.round((completedStops / ROUNDS_PER_GAME) * 100);
+
+    if (completedStops >= ROUNDS_PER_GAME) {
+      roundPill.textContent = t("runComplete");
+    } else {
+      roundPill.textContent = t("stopOf", { n: roundIndex, total: ROUNDS_PER_GAME });
+    }
+    scorePill.textContent = fmtNum(gameScore);
+    if (runPctEl) runPctEl.textContent = `${pct}%`;
+    if (runTrackFill) runTrackFill.style.width = `${pct}%`;
+
+    const steps = progressEl.querySelectorAll(".run-step");
+    steps.forEach((step, i) => {
+      const n = i + 1;
+      step.classList.remove("is-current", "is-done", "is-just-done");
+      if (n <= completedStops) step.classList.add("is-done");
+      else if (n === completedStops + 1 && completedStops < ROUNDS_PER_GAME) {
+        step.classList.add("is-current");
+      }
+      if (pulseStep === n) step.classList.add("is-just-done");
     });
   }
 
@@ -233,14 +327,56 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function formatDistance(km) {
-    if (km < 1) return `${Math.round(km * 1000)} m away`;
-    if (km < 10) return `${km.toFixed(1)} km away`;
-    return `${Math.round(km)} km away`;
+    const mi = km * 0.621371;
+    let main;
+    if (km < 1) main = t("distanceM", { d: Math.round(km * 1000) });
+    else if (km < 10) main = t("distanceKm1", { d: km.toFixed(1) });
+    else main = t("distanceKm", { d: Math.round(km) });
+
+    const miStr = mi < 10 ? mi.toFixed(1) : String(Math.round(mi));
+    return `${main} (${miStr} mi)`;
+  }
+
+  function initMascotEyes() {
+    const mascot = document.querySelector("#hud-mascot");
+    const eyes = document.querySelector("#mascot-eyes");
+    if (!mascot || !eyes) return;
+
+    const maxX = 2.2;
+    const maxY = 1.8;
+    let raf = 0;
+
+    const aim = (clientX, clientY) => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        const box = mascot.getBoundingClientRect();
+        const cx = box.left + box.width * 0.5;
+        const cy = box.top + box.height * 0.32;
+        const nx = (clientX - cx) / (box.width || 1);
+        const ny = (clientY - cy) / (box.height || 1);
+        const tx = Math.max(-maxX, Math.min(maxX, nx * 5));
+        const ty = Math.max(-maxY, Math.min(maxY, ny * 4));
+        eyes.setAttribute("transform", `translate(${tx.toFixed(2)} ${ty.toFixed(2)})`);
+      });
+    };
+
+    document.addEventListener("pointermove", (e) => aim(e.clientX, e.clientY), { passive: true });
+    document.addEventListener(
+      "focusin",
+      () => {
+        const el = document.activeElement;
+        if (!el || el === document.body) return;
+        const r = el.getBoundingClientRect();
+        aim(r.left + r.width / 2, r.top + r.height / 2);
+      },
+      true
+    );
   }
 
   /** Short readable place label from Nominatim result or address parts. */
   function formatPlaceLabel(item) {
-    if (!item) return "Unknown";
+    if (!item) return t("unknown");
     if (typeof item === "string") {
       const parts = item.split(",").map((s) => s.trim());
       if (parts.length <= 2) return item;
@@ -253,7 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const short = [city, country].filter(Boolean).join(", ");
     if (short) return short;
     const parts = (item.display_name || "").split(",").map((s) => s.trim());
-    return parts.slice(0, 2).join(", ") || item.display_name || "Unknown";
+    return parts.slice(0, 2).join(", ") || item.display_name || t("unknown");
   }
 
   async function nominatim(path) {
@@ -264,13 +400,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const response = await fetch(`https://nominatim.openstreetmap.org${path}`, {
       headers: {
         Accept: "application/json",
-        "Accept-Language": "en",
+        "Accept-Language": nominatimLang(),
         "User-Agent": "MapMapMaps/1.4 (https://mapmapmaps.com; free geography game)",
       },
     });
     if (!response.ok) {
-      if (response.status === 429) throw new Error("Geocoder busy — wait a moment");
-      throw new Error(`Geocoder error (${response.status})`);
+      if (response.status === 429) throw new Error(t("errGeocoderBusy"));
+      throw new Error(t("errGeocoder", { status: response.status }));
     }
     return response.json();
   }
@@ -332,6 +468,7 @@ document.addEventListener("DOMContentLoaded", () => {
       pinMarker = null;
     }
     updateMapGuessBtn();
+    syncMapPinHint();
   }
 
   function ensureGuessMap() {
@@ -354,9 +491,7 @@ document.addEventListener("DOMContentLoaded", () => {
       pinLatLng = { lat: e.lngLat.lat, lng: e.lngLat.lng };
       if (pinMarker) pinMarker.setLngLat(e.lngLat);
       else {
-        pinMarker = new maplibregl.Marker({ color: "#38bdf8", draggable: true })
-          .setLngLat(e.lngLat)
-          .addTo(guessMap);
+        pinMarker = addMascotMarker(e.lngLat, guessMap, true);
         pinMarker.on("dragend", () => {
           const p = pinMarker.getLngLat();
           pinLatLng = { lat: p.lat, lng: p.lng };
@@ -366,7 +501,8 @@ document.addEventListener("DOMContentLoaded", () => {
       guessInput.value = "";
       hideAutocomplete();
       updateMapGuessBtn();
-      showToast("Pin placed — press Guess");
+      syncMapPinHint();
+      showToast(t("toastPin"));
     });
 
     guessMap.on("load", () => guessMap.resize());
@@ -377,11 +513,12 @@ document.addEventListener("DOMContentLoaded", () => {
     mapPanel.hidden = !open;
     appEl.classList.toggle("is-map-open", open);
     mapToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    mapToggle.textContent = open ? "Close map" : "Open map";
+    mapToggle.textContent = open ? t("closeMap") : t("pickOnMap");
 
     if (open) {
       ensureGuessMap();
       setTimeout(() => guessMap?.resize(), 100);
+      syncMapPinHint();
     } else {
       showToast("");
     }
@@ -401,7 +538,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const response = await fetch("/api/mapillary?action=config");
     const data = await response.json();
     if (!response.ok || !data.accessToken) {
-      throw new Error(data.error || data.message || "Viewer config unavailable");
+      throw new Error(data.error || data.message || t("errViewerConfig"));
     }
     accessToken = data.accessToken;
   }
@@ -410,9 +547,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const response = await fetch("/api/mapillary?action=random");
     const data = await response.json();
     if (!response.ok || !data.id) {
-      throw new Error(data.message || data.error || "Failed to load location");
+      throw new Error(data.message || data.error || t("errLoadLocation"));
     }
-    if (!data.isPano) throw new Error("Non-360 image rejected");
+    if (!data.isPano) throw new Error(t("errNonPano"));
     return data;
   }
 
@@ -448,7 +585,7 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       const onError = (event) => {
         cleanup();
-        reject(event?.error || new Error("Viewer error"));
+        reject(event?.error || new Error(t("errViewer")));
       };
       const cleanup = () => {
         viewer.off("image", onImage);
@@ -466,7 +603,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await wait(200);
       if (typeof mapillary !== "undefined" && typeof maplibregl !== "undefined") return;
     }
-    throw new Error("Failed to load Mapillary or MapLibre");
+    throw new Error(t("errSdk"));
   }
 
   async function loadRound() {
@@ -498,11 +635,11 @@ document.addEventListener("DOMContentLoaded", () => {
           destroyViewer();
         }
       }
-      throw lastErr || new Error("Could not start a round");
+      throw lastErr || new Error(t("errRound"));
     } catch (err) {
       loading = false;
       showPreloader(false);
-      showToast(err.message || "Load failed", 5000);
+      showToast(err.message || t("toastLoadFailed"), 5000);
       throw err;
     }
   }
@@ -518,13 +655,26 @@ document.addEventListener("DOMContentLoaded", () => {
     resultEl.hidden = false;
     appEl.classList.add("is-result-open");
 
-    resultRound.textContent = `Round ${roundIndex} of ${ROUNDS_PER_GAME}`;
-    resultScore.textContent = `${points.toLocaleString("en-US")} pts`;
+    resultCheer.textContent = cheerMessage(points);
+    resultRound.textContent = t("stopCleared", { n: roundIndex });
+    resultGain.textContent = `+${fmtNum(points)}`;
+    resultScore.textContent = t("ptsTotal", { score: fmtNum(gameScore) });
     resultDistance.textContent = formatDistance(km);
     resultGuessLabel.textContent = guessLabel;
     resultActualLabel.textContent = actualLabel;
 
-    nextBtn.textContent = roundIndex >= ROUNDS_PER_GAME ? "Finish game" : "Next round";
+    resultStars.forEach((star, i) => {
+      star.classList.toggle("is-lit", i < starCount(points));
+    });
+
+    renderHud({ completedStops: roundIndex, pulseStep: roundIndex });
+    popScoreChip();
+    window.MapMapMapsSfx?.playStepComplete();
+    window.MapMapMapsSfx?.playStar(starCount(points));
+    window.MapMapMapsSfx?.playScorePop();
+
+    nextBtn.textContent =
+      roundIndex >= ROUNDS_PER_GAME ? t("finishRun") : t("nextStop");
 
     if (resultMap) {
       resultMap.remove();
@@ -565,7 +715,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       });
 
-      new maplibregl.Marker({ color: "#2563eb" })
+      new maplibregl.Marker({ element: createMascotMarkerElement(), anchor: "bottom" })
         .setLngLat([guess.lng, guess.lat])
         .addTo(resultMap);
       new maplibregl.Marker({ color: "#059669" })
@@ -581,7 +731,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const data = await nominatim(
       `/search?format=json&q=${encodeURIComponent(query)}&limit=1&addressdetails=1`
     );
-    if (!data.length) throw new Error("Place not found — try another spelling");
+    if (!data.length) throw new Error(t("errPlaceNotFound"));
     return {
       lat: parseFloat(data[0].lat),
       lng: parseFloat(data[0].lon),
@@ -598,11 +748,11 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       if (!guess && pinLatLng && !guessInput.value.trim()) {
         guess = { ...pinLatLng };
-        label = "Map pin";
+        label = t("mapPin");
       } else if (!guess) {
         const query = guessInput.value.trim();
         if (!query) {
-          showToast("Type a city or open the map");
+          showToast(t("toastTypeOrMap"));
           return;
         }
         hideAutocomplete();
@@ -613,6 +763,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setGuessLoading(true);
       roundLocked = true;
+      window.MapMapMapsSfx?.playClick();
       const actual = { lat: currentImage.lat, lng: currentImage.lng };
       const km = haversineKm(guess, actual);
       const points = scoreForKm(km);
@@ -625,7 +776,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showResult(guess, actual, km, points, label, actualLabel);
     } catch (err) {
       roundLocked = false;
-      showToast(err.message || "Guess failed", 4000);
+      showToast(err.message || t("toastGuessFailed"), 4000);
     } finally {
       setGuessLoading(false);
     }
@@ -692,10 +843,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   mapGuessBtn.addEventListener("click", () => submitGuess());
 
-  clearPinBtn.addEventListener("click", () => {
-    clearPin();
-    showToast("Pin cleared");
-  });
+  if (mapPinHint) {
+    mapPinHint.addEventListener("click", () => {
+      if (!pinLatLng) return;
+      clearPin();
+      showToast(t("toastPinCleared"));
+    });
+  }
 
   replaceBtn.addEventListener("click", () => {
     if (loading) return;
@@ -715,10 +869,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   renderHud();
+  syncMapPinHint();
+  initMascotEyes();
   loadRound().catch((err) => {
     console.error(err);
-    alert(
-      "Could not start MapMapMaps. Ensure MAPILLARY_ACCESS_TOKEN is set and run npm run seeds."
-    );
+    alert(t("errStartup"));
   });
 });
