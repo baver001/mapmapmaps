@@ -26,6 +26,7 @@ html = html.replace(/\/script\.js(\?v=[^"']*)?"/g, `/script.js?v=${v}"`);
 html = html.replace(/\/sw\.js(\?v=[^"']*)?"/g, `/sw.js?v=${v}"`);
 html = html.replace(/\/js\/build-diagnostics\.js(\?v=[^"']*)?"/g, `/js/build-diagnostics.js?v=${v}"`);
 html = html.replace(/\/js\/version\.js(\?v=[^"']*)?"/g, `/js/version.js?v=${v}"`);
+html = html.replace(/\/css\/style\.css(\?v=[^"']*)?"/g, `/css/style.css?v=${v}"`);
 html = html.replace(
   /<meta name="mapmapmaps-build" content="[^"]*"\s*\/?>/,
   `<meta name="mapmapmaps-build" content="${info.app}+${info.git}+ui${info.ui}" />`

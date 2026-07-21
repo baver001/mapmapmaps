@@ -21,7 +21,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <title>MapMapMaps — Guess the location</title>
     <link rel="icon" href="/image/mascot-pin.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/style.css?v=fc0bbcb" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/mapillary-js@4.1.2/dist/mapillary.min.css"
@@ -224,11 +224,33 @@
     <script src="/js/sfx.js"></script>
     <script src="/script.js?v=fc0bbcb"></script>
     <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker.register("/sw.js?v=fc0bbcb").catch(() => {});
+      (function () {
+        if (!("serviceWorker" in navigator)) return;
+        const git = window.__MAPMAPMAPS_BUILD__?.git || "dev";
+        const reloadKey = "mapmapmaps-sw-reload";
+
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (sessionStorage.getItem(reloadKey)) return;
+          sessionStorage.setItem(reloadKey, "1");
+          globalThis.location.reload();
         });
-      }
+
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register(`/sw.js?v=fc0bbcb"skipWaiting");
+              if (reg.waiting) skip(reg.waiting);
+              reg.addEventListener("updatefound", () => {
+                const installing = reg.installing;
+                installing?.addEventListener("statechange", () => {
+                  if (installing.state === "installed" && navigator.serviceWorker.controller) {
+                    skip(installing);
+                  }
+                });
+              });
+            })
+            .catch(() => {});
+        });
+      })();
     </script>
   </body>
 </html>

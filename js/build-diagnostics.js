@@ -13,6 +13,7 @@
 
   function isStale(client, server) {
     if (!client || !server) return false;
+    if (client.shell && server.shell && client.shell !== server.shell) return true;
     if (client.git && server.git && client.git !== server.git) return true;
     if (client.ui != null && server.ui != null && client.ui !== server.ui) return true;
     return false;
@@ -20,7 +21,7 @@
 
   function maybeReloadForDeploy(server) {
     if (!server?.git) return false;
-    const key = `mapmapmaps-reload-${server.git}`;
+    const key = `mapmapmaps-reload-${server.shell || "shell"}-${server.git}`;
     if (sessionStorage.getItem(key)) return false;
     sessionStorage.setItem(key, "1");
     console.info("MapMapMaps: new deploy detected, reloading…", server.git);

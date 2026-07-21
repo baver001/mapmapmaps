@@ -1,5 +1,5 @@
 /* Cache app shell only. Mapillary/OSM always from network. */
-const CACHE = "mapmapmaps-shell-v10";
+const CACHE = "mapmapmaps-shell-v11";
 const SHELL = [
   "/",
   "/index.html",
@@ -15,17 +15,23 @@ const SHELL = [
   "/image/mascot-pin.svg",
 ];
 
-const NETWORK_FIRST = new Set([
-  "/",
-  "/index.html",
-  "/version.json",
-  "/script.js",
-  "/js/version.js",
-  "/js/build-diagnostics.js",
-  "/js/i18n.js",
-  "/js/sfx.js",
-  "/css/style.css",
-]);
+/** Path without query — bust ?v= on CSS/JS still hits network-first. */
+function assetPath(url) {
+  return url.pathname;
+}
+
+function isShellAsset(pathname) {
+  return (
+    pathname === "/" ||
+    pathname === "/index.html" ||
+    pathname === "/version.json" ||
+    pathname === "/script.js" ||
+    pathname.startsWith("/js/") ||
+    pathname.startsWith("/css/") ||
+    pathname === "/manifest.webmanifest" ||
+    pathname.startsWith("/image/mascot-pin")
+  );
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -63,7 +69,9 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (NETWORK_FIRST.has(url.pathname)) {
+  const pathname = assetPath(url);
+
+  if (isShellAsset(pathname)) {
     event.respondWith(
       fetch(request)
         .then((response) => {
