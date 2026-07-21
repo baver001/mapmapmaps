@@ -116,7 +116,11 @@ async function serveStatic(req, res, url) {
 
   const ext = extname(filePath).toLowerCase();
   const type = MIME[ext] || "application/octet-stream";
-  res.writeHead(200, { "Content-Type": type });
+  const noCache = ext === ".html" || ext === ".js" || ext === ".webmanifest";
+  res.writeHead(200, {
+    "Content-Type": type,
+    ...(noCache ? { "Cache-Control": "no-cache, must-revalidate" } : {}),
+  });
   createReadStream(filePath).pipe(res);
 }
 

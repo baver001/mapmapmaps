@@ -51,6 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const gameCompleteSub = document.querySelector("#game-complete-sub");
   const gameCompletePlay = document.querySelector("#game-complete-play");
 
+  function bind(el, type, handler, options) {
+    if (!el) {
+      console.warn(`MapMapMaps: missing element for "${type}" listener`);
+      return;
+    }
+    el.addEventListener(type, handler, options);
+  }
+
   const requiredElements = {
     app: appEl,
     roundPill,
@@ -75,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .map(([name]) => name);
   if (missingElements.length) {
     console.error(`MapMapMaps: missing required elements: ${missingElements.join(", ")}`);
-    if (preloader) preloader.classList.add("hide");
+    preloader?.classList.add("hide");
     return;
   }
 
@@ -298,6 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderHud(options = {}) {
+    if (!progressEl || !roundPill || !scorePill) return;
     const completedStops =
       options.completedStops ?? Math.max(0, roundIndex - 1);
     const pulseStep = options.pulseStep ?? null;
@@ -819,12 +828,12 @@ document.addEventListener("DOMContentLoaded", () => {
     loadRound().catch(() => {});
   }
 
-  guessForm.addEventListener("submit", (e) => {
+  bind(guessForm, "submit", (e) => {
     e.preventDefault();
     submitGuess();
   });
 
-  guessInput.addEventListener("keydown", (e) => {
+  bind(guessInput, "keydown", (e) => {
     if (e.key === "Escape") {
       hideAutocomplete();
       if (mapPanel.hidden === false) openMapPanel(false);
@@ -837,7 +846,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  guessInput.addEventListener("input", () => {
+  bind(guessInput, "input", () => {
     const query = guessInput.value.trim();
     clearTimeout(autocompleteTimer);
     hideAutocomplete();
@@ -855,21 +864,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 450);
   });
 
-  guessInput.addEventListener("blur", () => {
+  bind(guessInput, "blur", () => {
     if (pickingAutocomplete) return;
     setTimeout(() => {
       if (!pickingAutocomplete) hideAutocomplete();
     }, 150);
   });
 
-  mapToggle.addEventListener("click", () => {
+  bind(mapToggle, "click", () => {
     if (roundLocked || loading) return;
     openMapPanel(mapPanel.hidden);
   });
 
-  mapBackBtn.addEventListener("click", () => openMapPanel(false));
+  bind(mapBackBtn, "click", () => openMapPanel(false));
 
-  mapGuessBtn.addEventListener("click", () => submitGuess());
+  bind(mapGuessBtn, "click", () => submitGuess());
 
   if (mapPinHint) {
     mapPinHint.addEventListener("click", () => {
@@ -879,13 +888,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  replaceBtn.addEventListener("click", () => {
+  bind(replaceBtn, "click", () => {
     if (loading) return;
     loadRound().catch(() => {});
   });
 
-  nextBtn.addEventListener("click", advanceRound);
-  gameCompletePlay.addEventListener("click", closeGameCompleteAndRestart);
+  bind(nextBtn, "click", advanceRound);
+  bind(gameCompletePlay, "click", closeGameCompleteAndRestart);
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !resultEl.hidden) {
