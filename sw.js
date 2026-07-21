@@ -1,5 +1,5 @@
 /* Cache app shell only. Mapillary/OSM always from network. */
-const CACHE = "mapmapmaps-shell-v5";
+const CACHE = "mapmapmaps-shell-v6";
 const SHELL = [
   "/",
   "/index.html",
