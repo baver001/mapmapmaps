@@ -70,41 +70,42 @@
       metaDescription:
         "MapMapMaps — бесплатная игра в стиле GeoGuessr на панорамах Mapillary 360°.",
       pageTitle: "MapMapMaps — Угадай место",
-      runLabel: "Забег",
-      progressAria: "Прогресс забега",
-      stopOf: "Вид {n} из {total}",
-      runComplete: "Забег завершён!",
-      stopCleared: "Вид {n} угадан",
-      pts: "очк.",
-      ptsTotal: "{score} очк. всего",
-      distanceM: "{d} м",
-      distanceKm1: "{d} км",
-      distanceKm: "{d} км",
+      runLabel: "Серия",
+      progressAria: "Прогресс серии",
+      stopOf: "Панорама {n} из {total}",
+      runComplete: "Серия пройдена",
+      stopCleared: "Панорама {n} пройдена",
+      pts: "очков",
+      ptsTotal: "Всего {score}",
+      distanceM: "{d} метров",
+      distanceKm1: "{d} километра",
+      distanceKm: "{d} километров",
       placeholderGuess: "Город или страна…",
       guess: "Угадать",
       newSpot: "Другое место",
-      pickOnMap: "На карте",
+      pickOnMap: "Выбрать на карте",
       closeMap: "Закрыть карту",
-      streetView: "← Улица",
+      streetView: "← К панораме",
       dropPin: "Поставьте метку на карте",
       clearPin: "Убрать метку",
       yourGuess: "Ваш ответ",
-      actual: "Реально",
+      actual: "Верное место",
       continue: "Дальше",
-      nextStop: "Следующая →",
-      finishRun: "Завершить",
+      nextStop: "Следующая панорама →",
+      finishRun: "Завершить серию",
       donate: "Поддержать",
       donateTitle: "Поддержать MapMapMaps",
-      gameComplete: "Игра окончена!",
-      thisGame: "Этот забег",
+      gameComplete: "Серия завершена!",
+      thisGame: "Счёт за серию",
       personalBest: "Личный рекорд",
       playAgain: "Играть снова",
-      firstComplete: "Первый забег!",
-      firstCompleteSub: "Счёт сохранён на этом устройстве. Побей его в следующий раз!",
-      newBest: "Новый рекорд!",
-      beatRecord: "Вы побили прошлый результат: {score}.",
-      awayFromRecord: "До рекорда {diff} — попробуйте ещё!",
-      greatRun: "Отличный забег! Можно ещё лучше.",
+      firstComplete: "Первое прохождение!",
+      firstCompleteSub:
+        "Результат сохранён на этом устройстве. Попробуйте побить его в следующий раз!",
+      newBest: "Новый личный рекорд!",
+      beatRecord: "Вы улучшили прошлый результат: {score}.",
+      awayFromRecord: "До рекорда осталось {diff} — попробуйте ещё!",
+      greatRun: "Отличная серия! Можно ещё лучше.",
       cheerPerfect: "Идеально!",
       cheerBrilliant: "Блестяще!",
       cheerGreat: "Отлично!",
@@ -643,6 +644,56 @@
     }
   }
 
+  /** Full word for points (Russian plural rules). */
+  function formatPoints(n) {
+    const num = Math.abs(Number(n) || 0);
+    const formatted = formatNumber(num);
+    if (locale === "ru") {
+      const mod10 = num % 10;
+      const mod100 = num % 100;
+      let word = "очков";
+      if (mod10 === 1 && mod100 !== 11) word = "очко";
+      else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) word = "очка";
+      return `${formatted} ${word}`;
+    }
+    if (locale === "en") {
+      return `${formatted} ${num === 1 ? "point" : "points"}`;
+    }
+    return `${formatted} ${t("pts")}`;
+  }
+
+  /** Full word for meters (Russian). */
+  function formatMeters(n) {
+    const num = Math.abs(Number(n) || 0);
+    const formatted = formatNumber(Math.round(num));
+    if (locale === "ru") {
+      const mod10 = num % 10;
+      const mod100 = num % 100;
+      let word = "метров";
+      if (mod10 === 1 && mod100 !== 11) word = "метр";
+      else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) word = "метра";
+      return `${formatted} ${word}`;
+    }
+    return t("distanceM", { d: formatted });
+  }
+
+  function formatKilometers(n) {
+    const num = Math.abs(Number(n) || 0);
+    if (locale === "ru") {
+      const rounded = num < 10 ? Math.round(num * 10) / 10 : Math.round(num);
+      const intPart = Math.floor(rounded);
+      const formatted = formatNumber(rounded);
+      const mod10 = intPart % 10;
+      const mod100 = intPart % 100;
+      let word = "километров";
+      if (mod10 === 1 && mod100 !== 11) word = "километр";
+      else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) word = "километра";
+      return `${formatted} ${word}`;
+    }
+    if (num < 10) return t("distanceKm1", { d: formatNumber(num.toFixed(1)) });
+    return t("distanceKm", { d: formatNumber(Math.round(num)) });
+  }
+
   function applyStatic() {
     document.documentElement.lang = localeTag();
     const title = document.querySelector("title");
@@ -667,6 +718,9 @@
     locale,
     localeTag,
     formatNumber,
+    formatPoints,
+    formatMeters,
+    formatKilometers,
     applyStatic,
     supported: SUPPORTED,
   };

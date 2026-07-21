@@ -149,8 +149,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number(localStorage.getItem(BEST_KEY) || 0);
   }
 
+  const fmtPoints = (n) => window.MapMapMapsI18n?.formatPoints?.(n) ?? `${fmtNum(n)} ${t("pts")}`;
+
   function formatPts(n) {
-    return `${fmtNum(n)} ${t("pts")}`;
+    return fmtPoints(n);
   }
 
   function launchConfetti(durationMs = 4200) {
@@ -367,8 +369,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function formatDistance(km) {
     const mi = km * 0.621371;
+    const i18n = window.MapMapMapsI18n;
     let main;
-    if (km < 1) main = t("distanceM", { d: Math.round(km * 1000) });
+    if (i18n?.locale === "ru" && i18n.formatMeters && i18n.formatKilometers) {
+      if (km < 1) main = i18n.formatMeters(km * 1000);
+      else main = i18n.formatKilometers(km);
+    } else if (km < 1) main = t("distanceM", { d: Math.round(km * 1000) });
     else if (km < 10) main = t("distanceKm1", { d: km.toFixed(1) });
     else main = t("distanceKm", { d: Math.round(km) });
 
@@ -716,7 +722,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resultCheer.textContent = cheerMessage(points);
     resultRound.textContent = t("stopCleared", { n: roundIndex });
     resultGain.textContent = `+${fmtNum(points)}`;
-    resultScore.textContent = t("ptsTotal", { score: fmtNum(gameScore) });
+    resultScore.textContent = t("ptsTotal", { score: formatPts(gameScore) });
     resultDistance.textContent = formatDistance(km);
     resultGuessLabel.textContent = guessLabel;
     resultActualLabel.textContent = actualLabel;
